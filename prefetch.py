@@ -69,8 +69,8 @@ def build_filename(nbytes, data):
     return filename.replace("\x00", "")
 
 
-# Lines 86 through 171 were taken and then modified from Francesco Picasso's
-# w10pfdecomp.py script. This modification makes two simple changes:
+# The code in the class below were taken and then modified from Francesco 
+# Picasso's w10pfdecomp.py script. This modification makes two simple changes:
 #
 #    - Wraps Francesco's logic in a Python class 
 #    - Returns a bytearray of uncompressed data instead of writing it to a new 
