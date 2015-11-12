@@ -554,12 +554,17 @@ class prefetch_v26(object):
         info["volumeslength"] = convert_dword(i[32:36])
         info["unknown1"] = convert_dwordlong(i[36:44])
         info["filetime0"] = convert_timestamp(convert_dwordlong(i[44:52]))
-        info["filetime1"] = convert_timestamp(struct.unpack("7Q", i[52:108])[0])
+        info["filetime1"] = struct.unpack("7Q", i[52:108])
         info["unknown2"] = convert_double_dwordlong(i[108:124])
         info["runcount"] = convert_dword(i[124:128])
         info["unknown3"] = convert_dword(i[128:132])
         info["unknown4"] = convert_dword(i[132:136])
         info["unknown5"] = struct.unpack("11Q", i[136:224])
+        info["timestamps"] = []
+
+        for item in info["filetime1"]:
+            if item:
+                info["timestamps"].append(convert_timestamp(item))
 
         self.metricsoffset = info["metricsoffset"]
         self.tracechainsoffset = info["tracechains_offset"]
@@ -649,12 +654,17 @@ class Prefetch_v30(object):
         info["volumeslength"] = convert_dword(i[32:36])
         info["unknown1"] = convert_dwordlong(i[36:44])
         info["filetime0"] = convert_timestamp(convert_dwordlong(i[44:52]))
-        info["filetime1"] = convert_timestamp(struct.unpack("7Q", i[52:108])[0])
+        info["filetime1"] = struct.unpack("7Q", i[52:108])
         info["unknown2"] = convert_double_dwordlong(i[108:124])
         info["runcount"] = convert_dword(i[124:128])
         info["unknown3"] = convert_dword(i[128:132])
         info["unknown4"] = convert_dword(i[132:136])
         info["unknown5"] = struct.unpack("11Q", i[136:224])
+        info["timestamps"] = []
+
+        for item in info["filetime1"]:
+            if item:
+                info["timestamps"].append(convert_timestamp(item))
 
         self.metricsoffset = info["metricsoffset"]
         self.tracechainsoffset = info["tracechains_offset"]
@@ -727,26 +737,21 @@ class Prefetch_v30(object):
 
         return volumes
 
+def parsefile(infile):
 
-
-def main():
-
-    p = ArgumentParser()
-    p.add_argument("pfile", help="Parse a given Prefetch file")
-    args = p.parse_args()
-
-
-    if args.pfile:    
-
-        if not os.path.exists(args.pfile):
-            sys.exit("[ - ] File not found")
-        else:
-            with open(args.pfile, "rb") as f:
+    if not os.path.exists(infile):
+        sys.exit("[ - ] {} not found".format(infile))
+    else:
+        try:
+            with open(infile, "rb") as f:
                 version = convert_dword(f.read(4))
+        except Exception, e:
+            return e
 
 
-        if version == 17:
-            with open(args.pfile, "rb") as f:
+    if version == 17:
+        try:
+            with open(infile, "rb") as f:
                 p = prefetch_v17(f)
 
                 header = p.consume_header(f)
@@ -754,10 +759,12 @@ def main():
                 strings = p.strings(f, p.stringsoffset, p.stringslength)
                 volumes = p.volumes_v17(f, p.volumesoffset)
 
-                print "\nFilename: {}".format(header["filename"])
+                banner = "=" * (len("Filename: ") + len(header["filename"]) + 2)
+                print "\n{0}\nFilename: {1}\n{0}\n".format(banner, header["filename"])
+                print "Run count: {}".format(info["runcount"])
+                print "Last executed: {}".format(info["filetime"])
                 print "Volume path: {}".format(volumes["volpath"])
-                print "Run count: {}\n".format(info["runcount"])
-                print "Last executed: {}\n".format(info["filetime"])
+                print "Volume serial number {}\n".format(volumes["vol_serialnumber"])
 
                 count = 1
                 for item in strings:
@@ -767,10 +774,13 @@ def main():
                         else:
                             print "{}:  {}".format(count, item)
                     count += 1
+        except Exception, e:
+            return e
 
 
-        elif version == 23:
-            with open(args.pfile, "rb") as f:
+    elif version == 23:
+        try:
+            with open(infile, "rb") as f:
                 p = prefetch_v23(f)
                 header = p.consume_header(f)
                 info = p.fileinfo_v23(f)
@@ -781,9 +791,10 @@ def main():
                 #fileref = p.fileref(f, p.volumesoffset, p.offsetE, p.lengthE)
                 #dirref = p.directorystrings(f, p.volumesoffset, p.offsetF, p.stringcountF)
 
-                print "\nFilename: {}".format(header["filename"])
+                banner = "=" * (len("Filename: ") + len(header["filename"]) + 2)
+                print "\n{0}\nFilename: {1}\n{0}\n".format(banner, header["filename"])
+                print "Run count: {}".format(info["runcount"])
                 print "Last executed: {}".format(info["filetime"])
-                print "Run count: {}\n".format(info["runcount"])
                 print "Volume path: {}".format(volumes["volpath"])
                 print "Volume serial number {}\n".format(volumes["vol_serialnumber"])
 
@@ -796,21 +807,31 @@ def main():
                         else:
                             print "{}:  {}".format(count, item)
                     count += 1
+        except Exception, e:
+            return e
 
 
-        elif version == 26:
-            with open(args.pfile, "rb") as f:
+    elif version == 26:
+        try:
+            with open(infile, "rb") as f:
                 p = prefetch_v26(f)
                 header = p.consume_header(f)
                 info = p.fileinfo_v26(f)
                 strings = p.strings(f, p.stringsoffset, p.stringslength)
                 volumes = p.volumes(f, p.volumesoffset)
 
-                print "\nFilename: {}".format(header["filename"])
+                banner = "=" * (len("Filename: ") + len(header["filename"]) + 2)
+                print "\n{0}\nFilename: {1}\n{0}\n".format(banner, header["filename"])
+                print "Run count: {}".format(info["runcount"])
                 print "Last executed: {}".format(info["filetime0"])
-                print "Run count: {}\n".format(info["runcount"])
+                print "Additional execution timestamps:"
+
+                for item in info["timestamps"]:
+                    print "    {}".format(item)
+
                 print "Volume path: {}".format(volumes["volpath"])
-                print "Volume serial number {}\n".format(volumes["vol_serialnumber"])
+                print "Volume serial number {}".format(volumes["vol_serialnumber"])
+                print "\nResources loaded at runtime:\n"
 
                 count = 1
                 for item in strings:
@@ -820,14 +841,17 @@ def main():
                         else:
                             print "{}:  {}".format(count, item)
                     count += 1
+        except Exception, e:
+            return e
 
-        else:
-            with open(args.pfile, "rb") as f:
+    else:
+        try:
+            with open(infile, "rb") as f:
                 if not convert_string(3, f.read(3)) == "MAM":
-                    sys.exit("[ - ] Unknown Prefetch file type")
+                    return
                               
             d = DecompressWin10()
-            decompressed = d.decompress(args.pfile)
+            decompressed = d.decompress(infile)
 
             p = Prefetch_v30()
             header = p.consume_header(decompressed)
@@ -836,12 +860,18 @@ def main():
             strings = p.strings(decompressed, p.stringsoffset, p.stringslength)
             volumes = p.volumes(decompressed, p.volumesoffset)
 
-
-            print "\nFilename: {}".format(header["filename"])
+            banner = "=" * (len("Filename: ") + len(header["filename"]) + 2)
+            print "\n{0}\nFilename: {1}\n{0}\n".format(banner, header["filename"])
+            print "Run count: {}".format(info["runcount"])
             print "Last executed: {}".format(info["filetime0"])
-            print "Run count: {}\n".format(info["runcount"])
+            print "Additional execution timestamps:"
+
+            for item in info["timestamps"]:
+                print "    {}".format(item)
+
             print "Volume path: {}".format(volumes["volpath"])
-            print "Volume serial number {}\n".format(volumes["vol_serialnumber"])
+            print "Volume serial number {}".format(volumes["vol_serialnumber"])
+            print "\nResources loaded at runtime:\n"
 
             count = 1
             for item in strings:
@@ -851,6 +881,23 @@ def main():
                     else:
                         print "{}:  {}".format(count, item)
                 count += 1
+        except Exception, e:
+            return e
+
+
+def main():
+
+    p = ArgumentParser()
+    p.add_argument("-f", "--file", help="Parse a given Prefetch file")
+    p.add_argument("-d", "--directory", help="Parse a directory of Prefetch files")
+    args = p.parse_args()
+
+    if args.file:
+        parsefile(args.file)
+
+    elif args.directory:
+        for pfile in os.listdir(args.directory):
+            parsefile(args.directory + pfile)
 
 
 main()
