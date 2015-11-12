@@ -69,7 +69,7 @@ def build_filename(nbytes, data):
     return filename.replace("\x00", "")
 
 
-# The code in the class below were taken and then modified from Francesco 
+# The code in the class below was taken and then modified from Francesco 
 # Picasso's w10pfdecomp.py script. This modification makes two simple changes:
 #
 #    - Wraps Francesco's logic in a Python class 
