@@ -21,10 +21,8 @@ import binascii
 import collections
 import ctypes
 from datetime import datetime,timedelta
-import getpass
 import json
 import os
-from smb.SMBConnection import SMBConnection
 import struct
 import sys
 
