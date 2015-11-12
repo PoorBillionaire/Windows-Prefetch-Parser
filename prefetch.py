@@ -736,17 +736,17 @@ def main():
     args = p.parse_args()
 
 
-    if args.file:    
+    if args.pfile:    
 
-        if not os.path.exists(args.file):
+        if not os.path.exists(args.pfile):
             sys.exit("[ - ] File not found")
         else:
-            with open(args.file, "rb") as f:
+            with open(args.pfile, "rb") as f:
                 version = convert_dword(f.read(4))
 
 
         if version == 17:
-            with open(args.file, "rb") as f:
+            with open(args.pfile, "rb") as f:
                 p = prefetch_v17(f)
 
                 header = p.consume_header(f)
@@ -770,7 +770,7 @@ def main():
 
 
         elif version == 23:
-            with open(args.file, "rb") as f:
+            with open(args.pfile, "rb") as f:
                 p = prefetch_v23(f)
                 header = p.consume_header(f)
                 info = p.fileinfo_v23(f)
@@ -799,7 +799,7 @@ def main():
 
 
         elif version == 26:
-            with open(args.file, "rb") as f:
+            with open(args.pfile, "rb") as f:
                 p = prefetch_v26(f)
                 header = p.consume_header(f)
                 info = p.fileinfo_v26(f)
@@ -822,12 +822,12 @@ def main():
                     count += 1
 
         else:
-            with open(args.file, "rb") as f:
+            with open(args.pfile, "rb") as f:
                 if not convert_string(3, f.read(3)) == "MAM":
                     sys.exit("[ - ] Unknown Prefetch file type")
                               
             d = DecompressWin10()
-            decompressed = d.decompress(args.file)
+            decompressed = d.decompress(args.pfile)
 
             p = Prefetch_v30()
             header = p.consume_header(decompressed)
