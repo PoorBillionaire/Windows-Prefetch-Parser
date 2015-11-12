@@ -4,6 +4,8 @@ Parse Windows Prefetch files: Supports XP - Windows 10 Prefetch files
 ###Description
 The Windows Prefetch file was put in place to offer performance benefits when launching applications. It just so happens to be one of the more beneficial forensic artifacts regarding evidence of applicaiton execution as well. prefetch.py provides functionality for parsing prefetch files for Windows XP, Vista, 7, 8, 8.1, and 10. An individual prefetch file can be specified, or a directory of prefetch files.
 
+Additionally, Prefetch version detection is automatic and requires no specification by the User.
+
 ####Command-Line Options
 For now, prefetch.py requires one of two command-line options: --file specifies a single prefetch to point the script at. --directory specifies an entire directory of prefetch files which will be parsed and printed to stdout:
 
