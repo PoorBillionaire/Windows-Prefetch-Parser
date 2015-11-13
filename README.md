@@ -55,33 +55,33 @@ By invoking the --directory / -d flag, the Analyst is able to parse an entire di
 ###Testing
 This section of the README covers the testing which was performed prior to this repo going public:
 
-Running prefetch.py from a Linux workstation:
+####Running prefetch.py from a Linux workstation:
 
-- [] Windows XP (Version 17 Prefetch files) using --file functionality
-- [] Windows XP (Version 17 Prefetch files) using --directory functionality
+- [ ] Windows XP (Version 17 Prefetch files) using --file functionality
+- [ ] Windows XP (Version 17 Prefetch files) using --directory functionality
 
-- [] Windows Vista / 7 (Version 23 Prefetch files) using --file functionality
-- [] Windows Vista / 7 (Version 23 Prefetch files) using the --directory functionality
+- [ ] Windows Vista / 7 (Version 23 Prefetch files) using --file functionality
+- [ ] Windows Vista / 7 (Version 23 Prefetch files) using the --directory functionality
 
-- [] Windows 8 / 8.1 (Version 26 Prefetch files) using the --file functionality
-- [] Windows 8 / 8.1 (Version 26 Prefetch files) using the --directory functionality
+- [ ] Windows 8 / 8.1 (Version 26 Prefetch files) using the --file functionality
+- [ ] Windows 8 / 8.1 (Version 26 Prefetch files) using the --directory functionality
 
-- [] Windows 10 (Version 30 Prefetch files) using the --file functionality
-- [] Windows 10 (Version 30 Prefetch files) using the --directory functionality
+- [ ] Windows 10 (Version 30 Prefetch files) using the --file functionality
+- [ ] Windows 10 (Version 30 Prefetch files) using the --directory functionality
 
-Running prefetch.py from a Windows workstation:
+####Running prefetch.py from a Windows workstation:
 
-- [] Windows XP (Version 17 Prefetch files) using --file functionality
-- [] Windows XP (Version 17 Prefetch files) using --directory functionality
+- [ ] Windows XP (Version 17 Prefetch files) using --file functionality
+- [ ] Windows XP (Version 17 Prefetch files) using --directory functionality
 
-- [] Windows Vista / 7 (Version 23 Prefetch files) using --file functionality
-- [] Windows Vista / 7 (Version 23 Prefetch files) using the --directory functionality
+- [ ] Windows Vista / 7 (Version 23 Prefetch files) using --file functionality
+- [ ] Windows Vista / 7 (Version 23 Prefetch files) using the --directory functionality
 
-- [] Windows 8 / 8.1 (Version 26 Prefetch files) using the --file functionality
-- [] Windows 8 / 8.1 (Version 26 Prefetch files) using the --directory functionality
+- [ ] Windows 8 / 8.1 (Version 26 Prefetch files) using the --file functionality
+- [ ] Windows 8 / 8.1 (Version 26 Prefetch files) using the --directory functionality
 
-- [] Windows 10 (Version 30 Prefetch files) using the --file functionality
-- [] Windows 10 (Version 30 Prefetch files) using the --directory functionality
+- [ ] Windows 10 (Version 30 Prefetch files) using the --file functionality
+- [ ] Windows 10 (Version 30 Prefetch files) using the --directory functionality
 
  
 
