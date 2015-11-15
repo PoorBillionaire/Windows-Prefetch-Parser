@@ -7,7 +7,9 @@ The Windows Prefetch file was put in place to offer performance benefits when la
 This project would not have been possible without the work of others much smarter than I. The prefetch file format is not officially documented by Microsoft and has been understood by reverse engineering, and trial-and-error. To gain a better understanding of the prefetch file format please see these resources; which were all used as references for the creation of this script:
 
 [ForensicsWiki: Windows Prefetch File Format](http://www.forensicswiki.org/wiki/Windows_Prefetch_File_Format)
+
 [Libyal Project: libscca ](https://github.com/libyal/libscca/blob/master/documentation/Windows%20Prefetch%20File%20(PF)%20format.asciidoc)
+
 [Zena Forensics: A first look at Windows 10 Prefetch files](http://blog.digital-forensics.it/2015/06/a-first-look-at-windows-10-prefetch.html)
 
 ###Features
