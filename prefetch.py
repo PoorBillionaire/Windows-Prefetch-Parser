@@ -604,8 +604,6 @@ class prefetch_v26(object):
 
 class Prefetch_v30(object):
     def __init__(self):
-        pass
-
         self.metricsoffset = None
         self.tracechainsoffset = None
         self.stringsoffset = None
