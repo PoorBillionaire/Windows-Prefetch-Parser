@@ -920,8 +920,11 @@ def main():
         parsefile(args.file)
 
     elif args.directory:
-        for pfile in os.listdir(args.directory):
-            parsefile(args.directory + pfile)
+        if not (args.directory.endswith("/") or args.directory.endswith("\\")):
+            sys.exit("\n[ - ] When enumerating a directory, add a trailing slash")
+        else:
+            for pfile in os.listdir(args.directory):
+                parsefile(args.directory + pfile)
 
 
 main()
