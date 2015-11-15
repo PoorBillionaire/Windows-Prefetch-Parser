@@ -1,4 +1,4 @@
-# Windows-Prefetch-Parser
+#Windows-Prefetch-Parser
 Python script created to parse Windows Prefetch files: Supports XP - Windows 10 Prefetch files
 
 ###Description
@@ -9,6 +9,10 @@ The Windows Prefetch file was put in place to offer performance benefits when la
 * Specify a single prefetch file or a directory of prefetch files
 * Automatic version detection - no specification required by the user
 * On-the-fly type 30 (Windows 10) decompression and parsing
+* (Mostly) cross-platform: Windows 10 prefetch files must be parsed from a Windows workstation using this script. All others have been tested on both Windows and Linux
+
+###Note: Version 30 (Windows 10)
+The class being utilized for Windows 10 prefetch file decompression makes use of Python's 'ctypes' module. This module relies on the Windows API; therefore the Analyst must be working from a Windows workstation in order to decompress and parse Windows 10 prefetch files.
 
 ####Command-Line Options
 For now, prefetch.py requires one of two command-line options: --file specifies a single prefetch to point the script at. --directory specifies an entire directory of prefetch files which will be parsed and printed to stdout. When using --directory / -d, remember to include the trailing slash:
@@ -65,19 +69,6 @@ Testing on the prefetch file types below has been completed successfully:
 - [x] Windows 8.1 (version 26)
 - [x] Windows 10 (version 30)
 
-
-###Python Requirements
-
-* from argparse import ArgumentParser
-* import binascii
-* import collections
-* import ctypes
-* from datetime import datetime,timedelta
-* import json
-* import os
-* import struct
-* import sys
-
 ###References
 This project would not have been possible without the work of others much smarter than I. The prefetch file format is not officially documented by Microsoft and has been understood through reverse engineering, and trial-and-error. 
 
@@ -92,3 +83,15 @@ To gain a better understanding of the prefetch file format, check out the follow
 [Libyal Project: libscca ](https://github.com/libyal/libscca/blob/master/documentation/Windows%20Prefetch%20File%20(PF)%20format.asciidoc)
 
 [Zena Forensics: A first look at Windows 10 Prefetch files](http://blog.digital-forensics.it/2015/06/a-first-look-at-windows-10-prefetch.html)
+
+###Python Requirements
+
+* from argparse import ArgumentParser
+* import binascii
+* import collections
+* import ctypes
+* from datetime import datetime,timedelta
+* import json
+* import os
+* import struct
+* import sys
