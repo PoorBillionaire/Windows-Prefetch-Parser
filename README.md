@@ -4,7 +4,14 @@ Python script created to parse Windows Prefetch files: Supports XP - Windows 10 
 ###Description
 The Windows Prefetch file was put in place to offer performance benefits when launching applications. It just so happens to be one of the more beneficial forensic artifacts regarding evidence of applicaiton execution as well. prefetch.py provides functionality for parsing prefetch files for all current prefetch file versions: 17, 23, 26, and 30.
 
-This project would not have been possible without the work of others much smarter than I. The prefetch file format is not officially documented by Microsoft and has been understood by reverse engineering, and trial-and-error. To gain a better understanding of the prefetch file format please see these resources; which were all used as references for the creation of this script:
+###References
+This project would not have been possible without the work of others much smarter than I. The prefetch file format is not officially documented by Microsoft and has been understood through reverse engineering, and trial-and-error. 
+
+Additionally, Without the excellent work by Francesco Picasso in understanding the Windows 10 prefetch compression method, I would not have been able to get Windows 10 parsed here. I use a modified version of his decompression script in prefetch.py. Francesco's original script can be found at the link below:
+
+[w10pfdecomp.py](https://github.com/dfirfpi/hotoloti/blob/master/sas/w10pfdecomp.py)
+
+To gain a better understanding of the prefetch file format, check out the following resources; which were all used as references for the creation of my script:
 
 [ForensicsWiki: Windows Prefetch File Format](http://www.forensicswiki.org/wiki/Windows_Prefetch_File_Format)
 
