@@ -129,7 +129,7 @@ class DecompressWin10(object):
                 compressed = compressed[4:]
                 crc = binascii.crc32(compressed, crc)          
                 if crc != file_crc:
-                    sys.exit('Wrong file CRC {0:x} - {1:x}!'.format(crc, file_crc))
+                    print '{} Wrong file CRC {0:x} - {1:x}!'.format(infile, crc, file_crc)
 
             compressed_size = len(compressed)
 
@@ -166,7 +166,7 @@ class DecompressWin10(object):
                 print 'Decompressed with a different size than original!'
 
 
-            return bytearray(ntDecompressed)
+        return bytearray(ntDecompressed)
 
 
 
@@ -765,15 +765,21 @@ def parsefile(infile):
                 print "Last executed: {}".format(info["filetime"])
                 print "Volume path: {}".format(volumes["volpath"])
                 print "Volume serial number {}\n".format(volumes["vol_serialnumber"])
+                print "\nResources loaded:\n"
 
                 count = 1
                 for item in strings:
                     if item != strings[-1]:
-                        if count > 9:
+                        if count > 999:
                             print "{}: {}".format(count, item)
+                        if count > 99:
+                            print "{}:  {}".format(count, item)                            
+                        elif count > 9:
+                            print "{}:   {}".format(count, item)
                         else:
-                            print "{}:  {}".format(count, item)
+                            print "{}:    {}".format(count, item)
                     count += 1
+
         except Exception, e:
             return e
 
@@ -797,16 +803,21 @@ def parsefile(infile):
                 print "Last executed: {}".format(info["filetime"])
                 print "Volume path: {}".format(volumes["volpath"])
                 print "Volume serial number {}\n".format(volumes["vol_serialnumber"])
-
+                print "\nResources loaded:\n"
 
                 count = 1
                 for item in strings:
                     if item != strings[-1]:
-                        if count > 9:
+                        if count > 999:
                             print "{}: {}".format(count, item)
+                        if count > 99:
+                            print "{}:  {}".format(count, item)                            
+                        elif count > 9:
+                            print "{}:   {}".format(count, item)
                         else:
-                            print "{}:  {}".format(count, item)
+                            print "{}:    {}".format(count, item)
                     count += 1
+
         except Exception, e:
             return e
 
@@ -824,31 +835,40 @@ def parsefile(infile):
                 print "\n{0}\nFilename: {1}\n{0}\n".format(banner, header["filename"])
                 print "Run count: {}".format(info["runcount"])
                 print "Last executed: {}".format(info["filetime0"])
-                print "Additional execution timestamps:"
+                
+                if info["timestamps"]:
+                    print "Additional execution timestamp(s):"
+                    for item in info["timestamps"]:
+                        print "    {}".format(item)
 
-                for item in info["timestamps"]:
-                    print "    {}".format(item)
-
-                print "Volume path: {}".format(volumes["volpath"])
+                print "\nVolume path: {}".format(volumes["volpath"])
                 print "Volume serial number {}".format(volumes["vol_serialnumber"])
-                print "\nResources loaded at runtime:\n"
+                print "\nResources loaded:\n"
 
                 count = 1
                 for item in strings:
                     if item != strings[-1]:
-                        if count > 9:
+                        if count > 999:
                             print "{}: {}".format(count, item)
+                        if count > 99:
+                            print "{}:  {}".format(count, item)                            
+                        elif count > 9:
+                            print "{}:   {}".format(count, item)
                         else:
-                            print "{}:  {}".format(count, item)
+                            print "{}:    {}".format(count, item)
                     count += 1
+
         except Exception, e:
             return e
 
     else:
         try:
             with open(infile, "rb") as f:
-                if not convert_string(3, f.read(3)) == "MAM":
-                    return
+                compressed_header = convert_string(3, f.read(3))
+            
+            if compressed_header != "MAM":
+                return
+                
                               
             d = DecompressWin10()
             decompressed = d.decompress(infile)
@@ -864,23 +884,29 @@ def parsefile(infile):
             print "\n{0}\nFilename: {1}\n{0}\n".format(banner, header["filename"])
             print "Run count: {}".format(info["runcount"])
             print "Last executed: {}".format(info["filetime0"])
-            print "Additional execution timestamps:"
+            
+            if info["timestamps"]:
+                print "Additional execution timestamp(s):"
+                for item in info["timestamps"]:
+                    print "    {}".format(item)
 
-            for item in info["timestamps"]:
-                print "    {}".format(item)
-
-            print "Volume path: {}".format(volumes["volpath"])
+            print "\nVolume path: {}".format(volumes["volpath"])
             print "Volume serial number {}".format(volumes["vol_serialnumber"])
-            print "\nResources loaded at runtime:\n"
+            print "\nResources loaded:\n"
 
             count = 1
             for item in strings:
                 if item != strings[-1]:
-                    if count > 9:
+                    if count > 999:
                         print "{}: {}".format(count, item)
+                    if count > 99:
+                        print "{}:  {}".format(count, item)                            
+                    elif count > 9:
+                        print "{}:   {}".format(count, item)
                     else:
-                        print "{}:  {}".format(count, item)
+                        print "{}:    {}".format(count, item)
                 count += 1
+
         except Exception, e:
             return e
 
