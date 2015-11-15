@@ -2,12 +2,22 @@
 Parse Windows Prefetch files: Supports XP - Windows 10 Prefetch files
 
 ###Description
-The Windows Prefetch file was put in place to offer performance benefits when launching applications. It just so happens to be one of the more beneficial forensic artifacts regarding evidence of applicaiton execution as well. prefetch.py provides functionality for parsing prefetch files for Windows XP, Vista, 7, 8, 8.1, and 10. An individual prefetch file can be specified, or a directory of prefetch files.
+The Windows Prefetch file was put in place to offer performance benefits when launching applications. It just so happens to be one of the more beneficial forensic artifacts regarding evidence of applicaiton execution as well. prefetch.py provides functionality for parsing prefetch files for all current prefetch file versions: 17, 23, 26, and 30.
 
-Additionally, Prefetch version detection is automatic and requires no specification by the User.
+This project would not have been possible without the work of others much smarter than I. The prefetch file format is not officially documented by Microsoft and has been understood by reverse engineering, and trial-and-error. To gain a better understanding of the prefetch file format please see these resources; which were all used as references for the creation of this script:
+
+[ForensicsWiki: Windows Prefetch File Format](http://www.forensicswiki.org/wiki/Windows_Prefetch_File_Format)
+[Libyal Project: libscca ](https://github.com/libyal/libscca/blob/master/documentation/Windows%20Prefetch%20File%20(PF)%20format.asciidoc)
+[Zena Forensics: A first look at Windows 10 Prefetch files](http://blog.digital-forensics.it/2015/06/a-first-look-at-windows-10-prefetch.html)
+
+###Features
+
+* Specify a single prefetch file or a directory of prefetch files
+* Automatic version detection - no specification required by the user
+* On-the-fly type 30 (Windows 10) decompression and parsing
 
 ####Command-Line Options
-For now, prefetch.py requires one of two command-line options: --file specifies a single prefetch to point the script at. --directory specifies an entire directory of prefetch files which will be parsed and printed to stdout:
+For now, prefetch.py requires one of two command-line options: --file specifies a single prefetch to point the script at. --directory specifies an entire directory of prefetch files which will be parsed and printed to stdout. When using --directory / -d, remember to include the trailing slash:
 
 ```
 dev@computer:~/$ python prefetch.py -h
@@ -53,37 +63,14 @@ By invoking the --directory / -d flag, the Analyst is able to parse an entire di
 
 
 ###Testing
-This section of the README covers the testing which was performed prior to this repo going public:
 
-####Running prefetch.py from a Linux workstation:
+Testing on the prefetch file types below has been completed successfully:
 
-- [ ] Windows XP (Version 17 Prefetch files) using --file functionality
-- [ ] Windows XP (Version 17 Prefetch files) using --directory functionality
+- [x] Windows XP (version 17)
+- [x] Windows 7 (version 23)
+- [x] Windows 8.1 (version 26)
+- [x] Windows 10 (version 30)
 
-- [ ] Windows Vista / 7 (Version 23 Prefetch files) using --file functionality
-- [ ] Windows Vista / 7 (Version 23 Prefetch files) using the --directory functionality
-
-- [ ] Windows 8 / 8.1 (Version 26 Prefetch files) using the --file functionality
-- [ ] Windows 8 / 8.1 (Version 26 Prefetch files) using the --directory functionality
-
-- [ ] Windows 10 (Version 30 Prefetch files) using the --file functionality
-- [ ] Windows 10 (Version 30 Prefetch files) using the --directory functionality
-
-####Running prefetch.py from a Windows workstation:
-
-- [ ] Windows XP (Version 17 Prefetch files) using --file functionality
-- [ ] Windows XP (Version 17 Prefetch files) using --directory functionality
-
-- [ ] Windows Vista / 7 (Version 23 Prefetch files) using --file functionality
-- [ ] Windows Vista / 7 (Version 23 Prefetch files) using the --directory functionality
-
-- [ ] Windows 8 / 8.1 (Version 26 Prefetch files) using the --file functionality
-- [ ] Windows 8 / 8.1 (Version 26 Prefetch files) using the --directory functionality
-
-- [ ] Windows 10 (Version 30 Prefetch files) using the --file functionality
-- [ ] Windows 10 (Version 30 Prefetch files) using the --directory functionality
-
- 
 
 ###Python Requirements
 
