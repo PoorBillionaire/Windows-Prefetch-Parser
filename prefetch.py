@@ -163,7 +163,7 @@ class DecompressWin10(object):
                     tohex(ntstatus, 32)))
 
             if ntFinalUncompressedSize.value != decompressed_size:
-                print 'Decompressed with a different size than original!'
+                sys.exit('Decompressed with a different size than original!')
 
 
         return bytearray(ntDecompressed)
@@ -924,7 +924,8 @@ def main():
             sys.exit("\n[ - ] When enumerating a directory, add a trailing slash")
         else:
             for pfile in os.listdir(args.directory):
-                parsefile(args.directory + pfile)
+                if pfile.endswith(".pf"):
+                    parsefile(args.directory + pfile)
 
 
 main()
