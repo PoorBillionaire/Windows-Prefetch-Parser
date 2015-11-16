@@ -129,7 +129,7 @@ class DecompressWin10(object):
                 compressed = compressed[4:]
                 crc = binascii.crc32(compressed, crc)          
                 if crc != file_crc:
-                    print '{} Wrong file CRC {0:x} - {1:x}!'.format(infile, crc, file_crc)
+                    sys.exit('{} Wrong file CRC {0:x} - {1:x}!'.format(infile, crc, file_crc))
 
             compressed_size = len(compressed)
 
