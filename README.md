@@ -12,7 +12,7 @@ The Windows Prefetch file was put in place to offer performance benefits when la
 * (Mostly) cross-platform: Windows 10 prefetch files must be parsed from a Windows workstation using this script. All others have been tested on both Windows and Linux
 
 ###Note: Version 30 (Windows 10)
-The class being utilized for Windows 10 prefetch file decompression makes use of Python's 'ctypes' module. This module relies on the Windows API; therefore the Analyst must be working from a Windows workstation in order to decompress and parse Windows 10 prefetch files.
+The class being utilized for Windows 10 prefetch file decompression makes use of Python's 'ctypes' module. This module relies on the Windows API; the Analyst must be working from a workstation running at least Windows 8 in order to decompress and parse Windows 10 prefetch files.
 
 ####Command-Line Options
 For now, prefetch.py requires one of two command-line options: --file specifies a single prefetch to point the script at. --directory specifies an entire directory of prefetch files which will be parsed and printed to stdout. When using --directory / -d, remember to include the trailing slash:
@@ -35,22 +35,31 @@ Using the --file / -f switch provides the output below:
 ```
 dev@computer:~$ python prefetch.py -f PING.EXE-7E94E73E.pf
 
-====================
-Filename: PING.EXE
-====================
+===================
+Filename: CMD.EXE
+===================
 
-Run count: 13
-Last executed: 2015-10-22 16:04:10.275140
-Volume path: \DEVICE\HARDDISKVOLUME2
-Volume serial number ee186f39
+Run count: 17
+Last executed: 2015-11-14 23:32:03.051396
+Additional execution timestamp(s):
+    2015-11-14 23:27:20.815510
+    2015-11-14 21:50:33.595482
+    2015-11-14 03:22:22.545884
+    2015-11-12 07:31:13.017108
+    2015-11-12 06:28:31.903824
+    2015-11-12 06:09:16.828206
+    2015-11-12 04:26:48.679006
 
-1:  \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\NTDLL.DLL
-2:  \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\KERNEL32.DLL
-3:  \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\APISETSCHEMA.DLL
-4:  \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\KERNELBASE.DLL
-5:  \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\LOCALE.NLS
-6:  \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\PING.EXE
+Volume path: \VOLUME{01d11b57aa4f5b10-e8aabf9f}
+Volume serial number e8aabf9f
 
+Resources loaded:
+
+1:    \VOLUME{01d11b57aa4f5b10-e8aabf9f}\WINDOWS\SYSTEM32\NTDLL.DLL
+2:    \VOLUME{01d11b57aa4f5b10-e8aabf9f}\WINDOWS\SYSTEM32\CMD.EXE
+3:    \VOLUME{01d11b57aa4f5b10-e8aabf9f}\WINDOWS\SYSTEM32\KERNEL32.DLL
+4:    \VOLUME{01d11b57aa4f5b10-e8aabf9f}\WINDOWS\SYSTEM32\KERNELBASE.DLL
+5:    \VOLUME{01d11b57aa4f5b10-e8aabf9f}\WINDOWS\SYSTEM32\LOCALE.NLS
 ...
 ...
 ...
