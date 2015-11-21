@@ -77,6 +77,8 @@ By invoking the --directory / -d flag, the Analyst is able to parse an entire di
 Sort a directory of Prefetch files by last execution time. The output looks like this:
 
 ```
+dev@computer:~$ python prefetch.py -e Prefetch/
+
 2015-10-22 18:11:34.918518 - CONHOST.EXE
 2015-10-22 18:11:34.555482 - MCSCRIPT_INUSE.EXE
 2015-10-22 18:10:52.214248 - ENTVUTIL.EXE
