@@ -9,6 +9,7 @@ The Windows Prefetch file was put in place to offer performance benefits when la
 * Specify a single prefetch file or a directory of prefetch files
 * Automatic version detection - no specification required by the user
 * On-the-fly type 30 (Windows 10) decompression and parsing
+* Sort a directory of Prefetch files by last execution time
 * (Mostly) cross-platform: Windows 10 prefetch files must be parsed from a Windows workstation using this script. All others have been tested on both Windows and Linux
 
 ###Note: Version 30 (Windows 10)
@@ -26,6 +27,8 @@ optional arguments:
   -f FILE, --file FILE  Parse a given Prefetch file
   -d DIRECTORY, --directory DIRECTORY
                         Parse a directory of Prefetch files
+  -e EXECUTED, --executed EXECUTED
+                        Sort a directory of Prefetch files by last execution time
 ```
 
 ####--file
@@ -66,8 +69,23 @@ Resources loaded:
 ```
 
 ####--directory
+
 By invoking the --directory / -d flag, the Analyst is able to parse an entire directory of Prefetch files at once.
 
+####--executed
+
+Sort a directory of Prefetch files by last execution time. The output looks like this:
+
+'''
+2015-10-22 18:11:34.918518 - CONHOST.EXE
+2015-10-22 18:11:34.555482 - MCSCRIPT_INUSE.EXE
+2015-10-22 18:10:52.214248 - ENTVUTIL.EXE
+2015-10-22 18:10:15.439572 - SEARCHFILTERHOST.EXE
+2015-10-22 18:10:15.285556 - SEARCHPROTOCOLHOST.EXE
+...
+...
+...
+'''
 
 ###Testing
 
