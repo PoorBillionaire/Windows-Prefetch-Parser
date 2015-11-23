@@ -89,6 +89,22 @@ dev@computer:~$ python prefetch.py -e Prefetch/
 ...
 ```
 
+####--zero
+
+Recently I encountered multiple zero-byte Prefetch files during an investigation. This broke some of the functionality in my script, which was expecting data instead of null values. I modified the script not to break when it encounters empty Prefetch files. Additionally, I added the -z/--zero flag which will help an Analyst identify them up front:
+
+```
+dev@computer:~$ python prefetch.py -z Prefetch/
+
+==========================
+Zero-byte Prefetch Files
+==========================
+
+WERMGR.EXE-0F2AC88C.pf
+WMIPRVSE.EXE-1628051C.pf
+
+```
+
 ###Testing
 
 Testing on the prefetch file types below has been completed successfully:
