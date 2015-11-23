@@ -849,41 +849,38 @@ def readtimestamp(infile):
     if not os.path.exists(infile):
         sys.exit("[ - ] {} not found".format(infile))
 
-    try:
-        with open(infile, "rb") as f:
-            version = convert_dword(f.read(4))
-            f.seek(-4, 1)
 
-            if version == 17:
-                p = prefetch_v17(f)
-                header = p.consume_header(f)
-                info = p.fileinfo_v17(f)
+    with open(infile, "rb") as f:
+        version = convert_dword(f.read(4))
+        f.seek(-4, 1)
 
-            elif version == 23:
-                p = prefetch_v23(f)
-                header = p.consume_header(f)
-                info = p.fileinfo_v23(f)
+        if version == 17:
+            p = prefetch_v17(f)
+            header = p.consume_header(f)
+            info = p.fileinfo_v17(f)
 
-            elif version == 26:
-                p = prefetch_v26(f)
-                header = p.consume_header(f)
-                info = p.fileinfo_v26(f)
+        elif version == 23:
+            p = prefetch_v23(f)
+            header = p.consume_header(f)
+            info = p.fileinfo_v23(f)
 
+        elif version == 26:
+            p = prefetch_v26(f)
+            header = p.consume_header(f)
+            info = p.fileinfo_v26(f)
+
+        else:
+            compressed_header = convert_string(3, f.read(3))
+            if compressed_header == "MAM":
+                d = DecompressWin10()
+                decompressed = d.decompress(infile)
+                p = Prefetch_v30()
+                header = p.consume_header(decompressed)
+                info = p.fileinfo_v30(decompressed)
             else:
-                compressed_header = convert_string(3, f.read(3))
-                if compressed_header == "MAM":
-                    d = DecompressWin10()
-                    decompressed = d.decompress(infile)
-                    p = Prefetch_v30()
-                    header = p.consume_header(decompressed)
-                    info = p.fileinfo_v30(decompressed)
-                else:
-                    return
+                return
 
         return {header["filename"] : info["filetime0"]}
-    except Exception, e:
-        return e
-
 
 
 
@@ -893,8 +890,8 @@ def main():
     p.add_argument("-d", "--directory", help="Parse a directory of Prefetch files")
     p.add_argument("-e", "--executed", help="Provide high-level information, sorted by last executed time")
     p.add_argument("-f", "--file", help="Parse a given Prefetch file")
+    p.add_argument("-z", "--zero", help="Identify empty prefetch files")
     args = p.parse_args()
-
 
     if args.executed:
 
@@ -904,7 +901,9 @@ def main():
             files = {}
             for pfile in os.listdir(args.executed):
                 if pfile.endswith(".pf"):
-                    files.update(readtimestamp(args.executed + pfile))
+                    if os.path.getsize(args.executed + pfile) > 0:
+                        files.update(readtimestamp(args.executed + pfile))
+
 
             sortedfiles = [(k,v) for v,k in sorted([(v,k) for k,v in files.items()], reverse=True)]
 
@@ -912,17 +911,38 @@ def main():
                 print convert_timestamp(item[1]) + " - " + item[0]
             print ""
 
-
     elif args.file:
-        print_verbose(args.file)
+
+        if os.path.getsize(args.file) > 0:
+            print_verbose(args.file)
+        else:
+            print "[ - ] {} is zero bytes in length and cannot be parsed".format(args.file)
 
     elif args.directory:
         if not (args.directory.endswith("/") or args.directory.endswith("\\")):
             sys.exit("\n[ - ] When enumerating a directory, add a trailing slash")
-        else:
-            for pfile in os.listdir(args.directory):
-                if pfile.endswith(".pf"):
+        
+        for pfile in os.listdir(args.directory):
+            if pfile.endswith(".pf"):
+                if os.path.getsize(args.directory + pfile) > 0:
                     print_verbose(args.directory + pfile)
+
+    elif args.zero:
+
+        emptyfiles = []
+        if not (args.zero.endswith("/") or args.zero.endswith("\\")):
+            sys.exit("\n[ - ] When enumerating a directory, add a trailing slash")
+
+        for i in os.listdir(args.zero):
+            if i.endswith(".pf"):
+                if os.path.getsize(args.zero + i) == 0:
+                    emptyfiles.append(i)
+
+        print "\n==========================\nZero-byte Prefetch Files\n==========================\n"
+
+        for item in emptyfiles:
+            print item
+        print ""
 
 
 main()
