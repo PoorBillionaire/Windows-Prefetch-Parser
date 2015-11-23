@@ -29,6 +29,7 @@ optional arguments:
                         Parse a directory of Prefetch files
   -e EXECUTED, --executed EXECUTED
                         Sort a directory of Prefetch files by last execution time
+  -z ZERO, --zero ZERO  Identify empty prefetch files
 ```
 
 ####--file
