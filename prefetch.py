@@ -175,7 +175,7 @@ class DecompressWin10(object):
 
 class Universal(object):
     # This class defines methods which are universal for Prefetch across
-    # all three versions: v17, v23, and v26. These methods are compiled into
+    # all three versions: v17, v23, v26, and v30. These methods are compiled into
     # one "universal" class to avoid code repetition when not necessary
 
     def __init__(self, infile, offset):
@@ -678,6 +678,7 @@ class Prefetch_v30(object):
 
     def metrics(self, infile, offset):
         # Section A: Metrics array
+        # Returns an ordered dict from the metrics portion of a Prefetch file
         metrics = collections.OrderedDict({})
         m = infile[offset:offset + 32]
 
@@ -693,7 +694,8 @@ class Prefetch_v30(object):
         return metrics
 
     def strings(self, infile, offset, length):
-        # Filename strings
+        # Returns an array of filename strings, from the "strings" section
+        # of the Prefetch file
         strings = []
         s = infile[offset:offset + length]
         stringsdata = convert_string(length, s)
@@ -706,7 +708,7 @@ class Prefetch_v30(object):
 
 
     def volumes(self, infile, offset):
-        # Volume information
+        # Returns a dictionary object of the 'volumes' section
         volumes = collections.OrderedDict({})
         v = infile[offset:offset + 96]
 
@@ -740,6 +742,8 @@ class Prefetch_v30(object):
 
 
 def print_verbose(infile):
+    # This function performs Prefetch file version detection
+    # and prints parsed results to stdout
 
     if not os.path.exists(infile):
         sys.exit("[ - ] {} not found".format(infile))
@@ -749,7 +753,6 @@ def print_verbose(infile):
                 version = convert_dword(f.read(4))
         except Exception, e:
             return e
-
 
 
     if version == 17:
@@ -845,9 +848,13 @@ def print_verbose(infile):
 
 
 def readtimestamp(infile):
-    # This function returns the filename and execution time of a given Prefetch file
+    # This function returns the filename and last execution time of a given Prefetch file
+    # This function is broken out be cause it is used when sorting last executing times
+    # for a directory of prefetch files (-e functionality)
+
     if not os.path.exists(infile):
         sys.exit("[ - ] {} not found".format(infile))
+
 
 
     with open(infile, "rb") as f:
@@ -883,6 +890,13 @@ def readtimestamp(infile):
         return {header["filename"] : info["filetime0"]}
 
 
+def zeroByteFileDetected(infile):
+    # Function to handle output for zero-byte Prefetch files
+    banner = "=" * (len(infile) + 2)
+    print "\n{0}\n{1}\n{0}\n".format(banner, infile)
+    print "[ - ] This file is zero bytes in length and cannot be parsed"
+
+
 
 def main():
 
@@ -894,29 +908,30 @@ def main():
     args = p.parse_args()
 
     if args.executed:
-
         if not (args.executed.endswith("/") or args.executed.endswith("\\")):
             sys.exit("\n[ - ] When enumerating a directory, add a trailing slash")
-        else:
-            files = {}
-            for pfile in os.listdir(args.executed):
-                if pfile.endswith(".pf"):
-                    if os.path.getsize(args.executed + pfile) > 0:
-                        files.update(readtimestamp(args.executed + pfile))
 
+        files = {}
+        for pfile in os.listdir(args.executed):
+            if pfile.endswith(".pf"):
+                if os.path.getsize(args.executed + pfile) > 0:
+                    files.update(readtimestamp(args.executed + pfile))
+                else:
+                    files.update({pfile : "Zero byte Prefetch file"})
 
             sortedfiles = [(k,v) for v,k in sorted([(v,k) for k,v in files.items()], reverse=True)]
 
-            for item in sortedfiles:
+        for item in sortedfiles:
+            if item[1] == "Zero byte Prefetch file":
+                print item[1] + " - " + item[0]
+            else:
                 print convert_timestamp(item[1]) + " - " + item[0]
-            print ""
 
     elif args.file:
-
         if os.path.getsize(args.file) > 0:
             print_verbose(args.file)
         else:
-            print "[ - ] {} is zero bytes in length and cannot be parsed".format(args.file)
+            zeroByteFileDetected(args.file)
 
     elif args.directory:
         if not (args.directory.endswith("/") or args.directory.endswith("\\")):
@@ -926,9 +941,10 @@ def main():
             if pfile.endswith(".pf"):
                 if os.path.getsize(args.directory + pfile) > 0:
                     print_verbose(args.directory + pfile)
+                else:
+                    zeroByteFileDetected(pfile)
 
     elif args.zero:
-
         emptyfiles = []
         if not (args.zero.endswith("/") or args.zero.endswith("\\")):
             sys.exit("\n[ - ] When enumerating a directory, add a trailing slash")
@@ -938,11 +954,11 @@ def main():
                 if os.path.getsize(args.zero + i) == 0:
                     emptyfiles.append(i)
 
-        print "\n==========================\nZero-byte Prefetch Files\n==========================\n"
-
-        for item in emptyfiles:
-            print item
-        print ""
+        if emptyfiles:
+            for item in emptyfiles:
+                zeroByteFileDetected(item)
+        else:
+            print "\n[ + ] {} does not contain any zero-byte Prefetch files.".format(args.zero)
 
 
 main()
