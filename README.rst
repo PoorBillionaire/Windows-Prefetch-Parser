@@ -76,7 +76,7 @@ By invoking the ``--directory / -d`` flag, the Analyst is able to parse an entir
 
 Sort a directory of Prefetch files by last execution time. The output looks like this:
 
-``
+::
 dev@computer:~$ python prefetch.py -e Prefetch/
 
 2015-10-22 18:11:34.918518 - CONHOST.EXE
@@ -87,7 +87,6 @@ dev@computer:~$ python prefetch.py -e Prefetch/
 ...
 ...
 ...
-``
 
 **--zero**
 
