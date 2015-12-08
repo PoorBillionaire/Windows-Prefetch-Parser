@@ -763,7 +763,7 @@ def print_verbose(infile):
                 info = p.fileinfo_v17(f)
                 strings = p.strings(f, p.stringsoffset, p.stringslength)
                 volumes = p.volumes_v17(f, p.volumesoffset)
-                banner = "=" * (len("Filename: ") + len(header["filename"]) + 2)
+                banner = "=" * (len(header["filename"]) + 2)
 
         except Exception, e:
             return e
@@ -777,8 +777,7 @@ def print_verbose(infile):
                 info = p.fileinfo_v23(f)
                 strings = p.strings(f, p.stringsoffset, p.stringslength)
                 volumes = p.volumes(f, p.volumesoffset)
-
-                banner = "=" * (len("Filename: ") + len(header["filename"]) + 2)
+                banner = "=" * (len(header["filename"]) + 2)
 
         except Exception, e:
             return e
@@ -792,7 +791,7 @@ def print_verbose(infile):
                 info = p.fileinfo_v26(f)
                 strings = p.strings(f, p.stringsoffset, p.stringslength)
                 volumes = p.volumes(f, p.volumesoffset)
-                banner = "=" * (len("Filename: ") + len(header["filename"]) + 2)
+                banner = "=" * (len(header["filename"]) + 2)
 
         except Exception, e:
             return e
@@ -815,12 +814,13 @@ def print_verbose(infile):
             metrics = p.metrics(decompressed, info["metricsoffset"])
             strings = p.strings(decompressed, p.stringsoffset, p.stringslength)
             volumes = p.volumes(decompressed, p.volumesoffset)
-            banner = "=" * (len("Filename: ") + len(header["filename"]) + 2)
+            banner = "=" * (len(header["filename"]) + 2)
 
         except Exception, e:
             return e
 
-    print "\n{0}\nFilename: {1}\n{0}\n".format(banner, header["filename"])
+
+    print "\n{0}\n{1}\n{0}\n".format(banner, header["filename"])
     print "Run count: {}".format(info["runcount"])
     print "Last executed: {}".format(convert_timestamp(info["filetime0"]))
 
@@ -909,7 +909,7 @@ def main():
 
     if args.executed:
         if not (args.executed.endswith("/") or args.executed.endswith("\\")):
-            sys.exit("\n[ - ] When enumerating a directory, add a trailing slash")
+            sys.exit("\n[ - ] When enumerating a directory, add a trailing slash\n")
 
         files = {}
         for pfile in os.listdir(args.executed):
@@ -935,7 +935,7 @@ def main():
 
     elif args.directory:
         if not (args.directory.endswith("/") or args.directory.endswith("\\")):
-            sys.exit("\n[ - ] When enumerating a directory, add a trailing slash")
+            sys.exit("\n[ - ] When enumerating a directory, add a trailing slash\n")
         
         for pfile in os.listdir(args.directory):
             if pfile.endswith(".pf"):
@@ -947,7 +947,7 @@ def main():
     elif args.zero:
         emptyfiles = []
         if not (args.zero.endswith("/") or args.zero.endswith("\\")):
-            sys.exit("\n[ - ] When enumerating a directory, add a trailing slash")
+            sys.exit("\n[ - ] When enumerating a directory, add a trailing slash\n")
 
         for i in os.listdir(args.zero):
             if i.endswith(".pf"):
@@ -955,10 +955,16 @@ def main():
                     emptyfiles.append(i)
 
         if emptyfiles:
+            message = "Zero-byte Prefetch Files"
+            border = "=" * (len(message) + 2)
+            print "\n{0}\n{1}\n{0}\n".format(border,message)
+
             for item in emptyfiles:
-                zeroByteFileDetected(item)
+                print "[ - ] {}".format(item)
+            print ""
+
         else:
-            print "\n[ + ] {} does not contain any zero-byte Prefetch files.".format(args.zero)
+            print "\n[ + ] {} does not contain any zero-byte Prefetch files.\n".format(args.zero)
 
 
 main()
