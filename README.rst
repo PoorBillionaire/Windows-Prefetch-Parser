@@ -19,7 +19,9 @@ The class being utilized for Windows 10 prefetch file decompression makes use of
 
 Command-Line Options
 ---------------------
-For now, prefetch.py requires one of two command-line options: ``--file`` specifies a single prefetch to point the script at. ``--directory`` specifies an entire directory of prefetch files which will be parsed and printed to stdout. When using ``--directory / -d``, remember to include the trailing slash:::
+For now, prefetch.py requires one of two command-line options: ``--file`` specifies a single prefetch to point the script at. ``--directory`` specifies an entire directory of prefetch files which will be parsed and printed to stdout. When using ``--directory / -d``, remember to include the trailing slash:
+
+::
 
     dev@computer:~/$ python prefetch.py -h
     usage: prefetch.py [-h] [-f FILE] [-d DIRECTORY]
@@ -35,7 +37,9 @@ For now, prefetch.py requires one of two command-line options: ``--file`` specif
 
 **--file**
 
-Using the ``--file / -f`` switch provides the output below:::
+Using the ``--file / -f`` switch provides the output below:
+
+::
 
     dev@computer:~$ python prefetch.py -f PING.EXE-7E94E73E.pf
     
@@ -75,7 +79,9 @@ By invoking the ``--directory / -d`` flag, the Analyst is able to parse an entir
 **--executed**
 
 Sort a directory of Prefetch files by last execution time. The output looks like this:
+
 ::
+
     dev@computer:~$ python prefetch.py -e Prefetch/
 
     2015-10-22 18:11:34.918518 - CONHOST.EXE
@@ -92,7 +98,9 @@ Sort a directory of Prefetch files by last execution time. The output looks like
 Recently I encountered multiple zero-byte Prefetch files during an investigation. This broke some of the functionality in my script, which was expecting data instead of null values. I modified the script not to break when it encounters empty Prefetch files. Additionally, I added the ``-z/--zero`` flag which will help an Analyst identify them up front. This piece of the script was cobbled together rather quickly in order to fix my Master copy - I am working on adding a bit of finesse in the "Zero-byte-detection-refinement" branch.
 
 Here is its output, for now:
+
 ::
+
     dev@computer:~$ python prefetch.py -z Prefetch/
     
     ==========================
