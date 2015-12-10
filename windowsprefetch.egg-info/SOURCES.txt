@@ -1,8 +1,0 @@
-README.rst
-setup.cfg
-setup.py
-windowsprefetch/prefetch.py
-windowsprefetch.egg-info/PKG-INFO
-windowsprefetch.egg-info/SOURCES.txt
-windowsprefetch.egg-info/dependency_links.txt
-windowsprefetch.egg-info/top_level.txt
