@@ -110,6 +110,20 @@ Here is its output, for now:
     WERMGR.EXE-0F2AC88C.pf
     WMIPRVSE.EXE-1628051C.pf
 
+Installation
+--------------
+Using setup.py:
+
+::
+    
+    python setup.py install
+    
+Using pip:
+
+::
+    
+    pip install windowsprefetch
+  
 Testing
 --------
 
