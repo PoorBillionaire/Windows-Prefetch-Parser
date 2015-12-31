@@ -443,7 +443,8 @@ def print_verbose(infile):
                 decompressed = d.decompress(infile)
                 p = Prefetch_v30(decompressed)
             else:
-                sys.exit("[ - ] Unknown file type")
+                print "[ - ] {} could not be parsed and may not be a valid PF file".format(infile)
+                return
     
     banner = "=" * (len(p.fileName) + 2)
     print "\n{0}\n{1}\n{0}\n".format(banner, p.fileName)
@@ -506,7 +507,7 @@ def sortByExecutionTime(directory):
                             p = Prefetch_v30(decompressed)
                             files.update({p.fileName : p.lastExecuted})
                         else:
-                            sys.exit("[ - ] Unknown file type")
+                            print "[ - ] {} could not be parsed and may not be a valid PF file".format(i)
 
     sortedfiles = [(k,v) for v,k in sorted([(v,k) for k,v in files.items()], reverse=True)]
 
@@ -553,14 +554,13 @@ def main():
                     zeroByteFileDetected(pfile)
     
     elif args.executed:
-        if (args.executed.endswith("/") or args.executed.endswith("\\")):
-            if os.path.isdir(args.executed):
-                sortByExecutionTime(args.executed)
-
-            else:
-                sys.exit("[ - ] Given path is not a directory")
-        else:
+        if not (args.executed.endswith("/") or args.executed.endswith("\\")):
             sys.exit("\n[ - ] When enumerating a directory, add a trailing slash\n")
+        
+        if os.path.isdir(args.executed):
+            sortByExecutionTime(args.executed)
+        else:
+            sys.exit("[ - ] Given path is not a directory")
 
     elif args.zero:
         emptyfiles = []
