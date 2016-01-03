@@ -425,16 +425,13 @@ class Prefetch_v30(object):
 
 
 def usePyscca(infile):
-    with open(infile) as f:
-        if convert_string(3, infile.read(3)) != "MAM":
-            return
 
     f = pyscca.open(infile)
     try:
         # Shallow attempt at identifying invalid PF file
         banner = "=" * (len(f.executable_filename) + 2)
     except IOError:
-        print "[ - ] {} could not be parsed".format(f)
+        print "[ - ] {} could not be parsed".format(infile)
         return
 
     print "\n{0}\n{1}\n{0}\n".format(banner, f.executable_filename)
