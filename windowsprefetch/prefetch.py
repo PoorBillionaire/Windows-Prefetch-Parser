@@ -25,6 +25,8 @@ from datetime import datetime,timedelta
 import getpass
 import json
 import os
+import pyscca
+import platform
 import struct
 import sys
 
@@ -422,6 +424,55 @@ class Prefetch_v30(object):
         self.volumesPath =  self.volumesPath.replace("\x00", "")
 
 
+def usePyscca(infile):
+    with open(infile) as f:
+        if convert_string(3, infile.read(3)) != "MAM":
+            return
+
+    f = pyscca.open(infile)
+    try:
+        # Shallow attempt at identifying invalid PF file
+        banner = "=" * (len(f.executable_filename) + 2)
+    except IOError:
+        print "[ - ] {} could not be parsed".format(f)
+        return
+
+    print "\n{0}\n{1}\n{0}\n".format(banner, f.executable_filename)
+    print "Run Count: {}".format(f.run_count)
+    print "Execution Timestamp(s):"
+
+    runCounter = 0
+    while runCounter < 8:
+        timestamp = f.get_last_run_time(runCounter)
+        if timestamp.year != 1601:
+            print "\t", timestamp 
+        runCounter += 1
+    print ""
+
+
+    volumeCount = 0
+    while volumeCount < f.get_number_of_volumes():
+        v = f.get_volume_information(volumeCount)
+        print "Volume Createion Time: {}".format(v.creation_time)
+        print "Device Path: {}".format(v.device_path)
+        print "Serial Number: {}\n".format(hex(v.serial_number))
+        volumeCount += 1
+
+
+    print "Resources Loaded: "
+    count = 1
+    for i in f.filenames:
+        if count > 999:
+            print "{}: {}".format(count, i)
+        if count > 99:
+            print "{}:  {}".format(count, i)
+        elif count > 9:
+            print "{}:   {}".format(count, i)
+        else:
+            print "{}:    {}".format(count, i)
+        count += 1
+
+
 def print_verbose(infile):
     # This function performs Prefetch file version detection
     # and prints parsed results to stdout
@@ -437,13 +488,22 @@ def print_verbose(infile):
         elif version == 26:
             p = prefetch_v26(f)
         else:
-            compressedHeader = convert_string(3, f.read(3))
-            if compressedHeader == "MAM":
-                d = DecompressWin10()
-                decompressed = d.decompress(infile)
-                p = Prefetch_v30(decompressed)
+            if platform.system() == "Windows":
+                version = str(platform.version())
+                if float(version[0:3]) >= 6.2:
+                    compressedHeader = convert_string(3, f.read(3))
+                    if compressedHeader == "MAM":
+                        f.seek(-3, 1)
+                        d = DecompressWin10()
+                        decompressed = d.decompress(infile)
+                        p = Prefetch_v30(decompressed)
+                    else:
+                        print "[ - ] {} could not be parsed and may not be a valid PF file".format(infile)
+                        return
+                else:
+                    usePyscca(infile)
             else:
-                print "[ - ] {} could not be parsed and may not be a valid PF file".format(infile)
+                usePyscca(infile)
                 return
     
     banner = "=" * (len(p.fileName) + 2)
