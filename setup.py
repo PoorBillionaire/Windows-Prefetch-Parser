@@ -16,7 +16,7 @@ setup(
     author='Adam Witt',
     author_email='accidentalassist@gmail.com',
     license='Apache Software License',
-    packages=['libscca-python'],
+    packages=find_packages(),
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Information Technology',
@@ -25,7 +25,7 @@ setup(
         'Programming Language :: Python :: 2.7'
     ],
 
+    install_requires='libscca-python',
     keywords='DFIR Prefetch Forensics Incident Response Microsoft Windows',
-    packages=find_packages(),
     scripts=['windowsprefetch/prefetch.py'],
 )
