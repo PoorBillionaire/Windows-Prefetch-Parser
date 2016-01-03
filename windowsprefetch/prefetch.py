@@ -430,8 +430,9 @@ def usePyscca(infile):
     try:
         # Shallow attempt at identifying invalid PF file
         banner = "=" * (len(f.executable_filename) + 2)
-    except IOError:
+    except IOError as e:
         print "[ - ] {} could not be parsed".format(infile)
+        print e
         return
 
     print "\n{0}\n{1}\n{0}\n".format(banner, f.executable_filename)
