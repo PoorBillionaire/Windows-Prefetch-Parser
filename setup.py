@@ -16,7 +16,7 @@ setup(
     author='Adam Witt',
     author_email='accidentalassist@gmail.com',
     license='Apache Software License',
-    packages=['libscca-python']
+    packages=['libscca-python'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Information Technology',
