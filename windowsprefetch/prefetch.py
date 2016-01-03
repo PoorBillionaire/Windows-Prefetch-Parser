@@ -413,7 +413,7 @@ class Prefetch_v30(object):
         # Volume path offset is relative to the start of section D
         # This piece seeks back to the start of section D, and then
         # seeks to the volume path from that point
-        v = infile[(offset + self.volumesOffset) : (offset + self.volumesOffset + (self.volumesOffset * 2))]
+        v = infile[(offset + self.volumesOffset) : (offset + self.volumesOffset + (self.volumesLength * 2))]
 
         # vol_length is the number of characters in the volpath string
         # The volume path string is UTF-16, which means each character
