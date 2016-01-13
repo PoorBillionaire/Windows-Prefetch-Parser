@@ -76,7 +76,7 @@ By invoking the ``--directory / -d`` flag, the Analyst is able to parse an entir
 
 **--executed**
 
-Sort a directory of Prefetch files by last execution time. The output looks like this:
+Sort a directory of Prefetch files by execution time. This includes all timestamps in Windows 8+ Prefetch files (up to eight per file):
 
 ::
 
