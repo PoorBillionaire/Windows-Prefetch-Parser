@@ -9,13 +9,11 @@ The Windows Prefetch file was put in place to offer performance benefits when la
 Features
 ---------
 * Specify a single prefetch file or a directory of prefetch files
-* Automatic version detection - no specification required by the user
-* On-the-fly type 30 (Windows 10) decompression and parsing
-* Sort a directory of Prefetch files by last execution time
-* (Mostly) cross-platform: Windows 10 prefetch files must be parsed from a Windows workstation using this script. All others have been tested on both Windows and Linux
+* CSV support
+* Limited Windows 10 support
+* Sort a directory of Prefetch files by all execution timestamps
+* (Mostly) cross-platform: Windows 10 prefetch files must be parsed from a Windows 8+ workstation
 
-**Note: Version 30 (Windows 10):**
-The class being utilized for Windows 10 prefetch file decompression makes use of Python's 'ctypes' module. This module relies on the Windows API; the Analyst must be working from a workstation running at least Windows 8 in order to decompress and parse Windows 10 prefetch files.
 
 Command-Line Options
 ---------------------
@@ -23,17 +21,17 @@ For now, prefetch.py requires one of two command-line options: ``--file`` specif
 
 ::
 
-    dev@computer:~/$ python prefetch.py -h
-    usage: prefetch.py [-h] [-f FILE] [-d DIRECTORY]
+    dev@computer:~$ ./prefetch.py -h
+    usage: prefetch.py [-h] [-c] [-d DIRECTORY] [-e EXECUTED] [-f FILE]
     
     optional arguments:
       -h, --help            show this help message and exit
-      -f FILE, --file FILE  Parse a given Prefetch file
+      -c, --csv             Present results in CSV format
       -d DIRECTORY, --directory DIRECTORY
-                            Parse a directory of Prefetch files
+                        Sort PF files by ALL last execution times
       -e EXECUTED, --executed EXECUTED
-                            Sort a directory of Prefetch files by last execution time
-      -z ZERO, --zero ZERO  Identify empty prefetch files
+                        Sort PF files by ALL execution times
+      -f FILE, --file FILE  Parse a given Prefetch file
 
 **--file**
 
@@ -93,37 +91,21 @@ Sort a directory of Prefetch files by last execution time. The output looks like
     ...
     ...
 
-**--zero**
+**--csv**
 
-Recently I encountered multiple zero-byte Prefetch files during an investigation. This broke some of the functionality in my script, which was expecting data instead of null values. I modified the script not to break when it encounters empty Prefetch files. Additionally, I added the ``-z/--zero`` flag which will help an Analyst identify them up front. This piece of the script was cobbled together rather quickly in order to fix my Master copy - I am working on adding a bit of finesse in the "Zero-byte-detection-refinement" branch.
-
-Here is its output, for now:
+Using the ``--csv / -c`` flag will provide results in CSV format:
 
 ::
 
-    dev@computer:~$ python prefetch.py -z Prefetch/
-    
-    ==========================
-    Zero-byte Prefetch Files
-    ==========================
+    Last Executed, Executable Name, Run Count
+    2015-11-11 23:26:11.841750, VMTOOLSD.EXE, 3
+    2015-09-02 05:57:42.718750, SETUP50.EXE, 2
+    2015-09-06 17:57:11.439168, EXPLORER.EXE, 2
+    2015-10-05 20:58:47.716908, LOGON.SCR, 3
+    2015-11-15 00:01:50.765626, GOOGLEUPDATE.EXE, 18
+    2015-09-02 07:10:10.064668, WIRESHARK-WIN32-1.12.7.EXE, 1
 
-    WERMGR.EXE-0F2AC88C.pf
-    WMIPRVSE.EXE-1628051C.pf
 
-Installation
---------------
-Using setup.py:
-
-::
-    
-    python setup.py install
-    
-Using pip:
-
-::
-    
-    pip install windowsprefetch
-  
 Testing
 --------
 
@@ -161,3 +143,4 @@ Python Requirements
 * import os
 * import struct
 * import sys
+* import tempfile

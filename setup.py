@@ -9,7 +9,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='windowsprefetch',
-    version='1.0.6',
+    version='2.0.0',
     description='A Python script to parse Windows Prefetch files',
     long_description=long_description,
     url='https://github.com/PoorBillionaire/Windows-Prefetch-Parser',
