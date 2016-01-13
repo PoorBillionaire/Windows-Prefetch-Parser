@@ -409,6 +409,318 @@ class DecompressWin10(object):
         return bytearray(ntDecompressed)
 
 
+<<<<<<< HEAD
+=======
+class Universal(object):
+    # This class defines methods which are universal for Prefetch across
+    # all three versions: v17, v23, v26, and v30. These methods are compiled into
+    # one "universal" class to avoid code repetition when not necessary
+
+    def __init__(self, infile, offset=0, length=0):
+        self.consume_header(infile)
+
+    def consume_header(self, infile):
+        # Parses the Prefetch file header, sets instance variables
+        # to be used at a later time.
+
+        h = infile.read(84)
+        self.version = convert_dword(h[0:4])
+        self.signature = convert_string(4, h[4:8])
+        #header["pflength"] = convert_dword(h[12:16])
+        self.fileName = build_filename(60, h[16:76])
+        self.hash = hex(convert_dword(h[76:80]))
+
+    def strings(self, infile, offset, length):
+        # Returns a list of filename strings
+        # These are the resources loaded at the application's runtime
+        strings = []
+        infile.seek(offset)
+        stringsdata = convert_string(length, infile.read(length))
+        splitstring = stringsdata.split("\x00\x00")
+        
+        for item in splitstring:
+            strings.append(item.replace("\x00", ""))
+
+        return strings
+
+
+class prefetch_v17(object):
+    def __init__(self, infile):
+        self.universal = Universal(infile)
+        self.fileName = self.universal.fileName
+        self.fileinfo_v17(infile)
+        self.strings = self.universal.strings(infile, offset=self.stringsOffset, length=self.stringsLength)
+        self.volumes_v17(infile, self.volumesOffset)
+
+    def fileinfo_v17(self, infile):
+        # Parse through the 'File Information' portion of Prefetch file
+        # Sets instance variables to be used later
+        # Compatibility: v17
+        infile.seek(84)
+        i = infile.read(156)
+
+        self.metricsOffset = convert_dword(i[0:4])
+        self.metricsEntries = convert_dword(i[4:8])
+        self.stringsOffset = convert_dword(i[16:20])
+        self.stringsLength = convert_dword(i[20:24])
+        self.volumesOffset = convert_dword(i[24:28])
+        self.numberOfVolumesEntries = convert_dword(i[28:32])
+        self.volumesLength = convert_dword(i[32:36])
+        self.lastExecuted = convert_dwordlong(i[36:44])
+        self.runCount = convert_dword(i[60:64])
+
+    def volumes_v17(self, infile, offset):
+	    # Volume information
+	    # Compatibility: v17
+
+        infile.seek(offset)
+        v = infile.read(104)
+
+        self.volumesOffset = convert_dword(v[0:4])
+        self.volumesLength = convert_dword(v[4:8])
+        self.volumeCreationTime = convert_timestamp(convert_dwordlong(v[8:16]))
+        self.volumeSerialNumber = format(convert_dword(v[16:20]), "x")
+
+        # Volume path offset is relative to the start of section D
+        # This piece seeks back to the start of section D, and then
+        # seeks to the volume path from that point
+        infile.seek((infile.tell() - 104) + self.volumesOffset)
+
+        # vol_length is the number of characters in the volpath string
+        # The volume path string is UTF-16, which means each character
+        # consumes two bytes. vol_length * 2 account for this
+        self.volumesPath = convert_string(self.volumesLength * 2, infile.read(self.volumesLength * 2))
+        self.volumesPath =  self.volumesPath.replace("\x00", "")
+
+
+class prefetch_v23(object):
+    def __init__(self, infile):
+        self.universal = Universal(infile)
+        self.fileName = self.universal.fileName
+        self.fileinfo_v23(infile)
+        self.strings = self.universal.strings(infile, offset=self.stringsOffset, length=self.stringsLength)
+        self.volumes(infile, self.volumesOffset)
+
+    def fileinfo_v23(self, infile):
+        # Parse through the 'File Information' portion of Prefetch file
+        # Start of the 'info' section is after the header
+        i = infile.read(156)
+
+        self.metricsOffset = convert_dword(i[0:4])
+        self.metricsEntries = convert_dword(i[4:8])
+        self.tracehainsOffset = convert_dword(i[8:12])
+        self.traceChainsEntries = convert_dword(i[12:16])
+        self.stringsOffset = convert_dword(i[16:20])
+        self.stringsLength = convert_dword(i[20:24])
+        self.volumesOffset = convert_dword(i[24:28])
+        self.volumesEntries = convert_dword(i[28:32])
+        self.volumesLength = convert_dword(i[32:36])
+        self.lastExecuted = convert_dwordlong(i[44:52])
+        self.runCount = convert_dword(i[68:72])
+
+    def volumes(self, infile, offset):
+        # Volume information
+        # Compatibility: v23, v26
+        volumes = collections.OrderedDict({})
+        infile.seek(offset)
+        v = infile.read(104)
+
+        self.volumesOffset = convert_dword(v[0:4])
+        self.volumesLength = convert_dword(v[4:8])
+        self.volumeCreationTime = convert_timestamp(convert_dwordlong(v[8:16]))
+        self.volumeSerialNumber = format(convert_dword(v[16:20]), "x")
+
+        # Volume path offset is relative to the start of section D
+        # This piece seeks back to the start of section D, and then
+        # seeks to the volume path from that point
+        infile.seek(-104 + self.volumesOffset, 1)
+
+        # vol_length is the number of characters in the volpath string
+        # The volume path string is UTF-16, which means each character
+        # consumes two bytes. vol_length * 2 account for this
+        self.volumesPath = convert_string(self.volumesLength * 2, infile.read(self.volumesLength * 2))
+        self.volumesPath =  self.volumesPath.replace("\x00", "")
+
+
+class prefetch_v26(object):
+    def __init__(self, infile):
+        self.universal = Universal(infile)
+        self.fileName = self.universal.fileName
+        self.fileinfo_v26(infile)
+        self.strings = self.universal.strings(infile, offset=self.stringsOffset, length=self.stringsLength)
+        self.volumes(infile, self.volumesOffset)
+
+    def fileinfo_v26(self, infile):
+        # Parse through the 'File Information' portion of Prefetch file
+        # Start of the 'info' section is after the header
+        infile.seek(84)
+        # Information section is 156 bytes in length
+        i = infile.read(224)
+
+        self.metricsOffse = convert_dword(i[0:4])
+        self.metricsEntries = convert_dword(i[4:8])
+        self.traceChainsOffset = convert_dword(i[8:12])
+        self.traceChainsEntries = convert_dword(i[12:16])
+        self.stringsOffset = convert_dword(i[16:20])
+        self.stringsLength = convert_dword(i[20:24])
+        self.volumesOffset = convert_dword(i[24:28])
+        self.volumesEntries = convert_dword(i[28:32])
+        self.volumesLength = convert_dword(i[32:36])
+        self.lastExecuted = convert_dwordlong(i[44:52])
+        self.additionalExecutionTimestamps = struct.unpack("7Q", i[52:108])
+        self.runCount = convert_dword(i[124:128])
+
+    def volumes(self, infile, offset):
+        # Volume information
+        # Compatibility: v23, v26
+        volumes = collections.OrderedDict({})
+        infile.seek(offset)
+        v = infile.read(104)
+
+        self.volumesOffset = convert_dword(v[0:4])
+        self.volumesLength = convert_dword(v[4:8])
+        self.volumeCreationTime = convert_timestamp(convert_dwordlong(v[8:16]))
+        self.volumeSerialNumber = format(convert_dword(v[16:20]), "x")
+
+        # Volume path offset is relative to the start of section D
+        # This piece seeks back to the start of section D, and then
+        # seeks to the volume path from that point
+        infile.seek(-104 + self.volumesOffset, 1)
+
+        # vol_length is the number of characters in the volpath string
+        # The volume path string is UTF-16, which means each character
+        # consumes two bytes. vol_length * 2 account for this
+        self.volumesPath = convert_string(self.volumesLength * 2, infile.read(self.volumesLength * 2))
+        self.volumesPath =  self.volumesPath.replace("\x00", "")
+
+
+class Prefetch_v30(object):
+    def __init__(self, infile):
+        self.consume_header(infile)
+        self.fileinfo_v30(infile)
+        self.strings = self.strings(infile, offset=self.stringsOffset, length=self.stringsLength)
+        self.volumes(infile, self.volumesOffset)
+
+    def consume_header(self, infile):
+        # Returns the Prefetch file header as a Python dictionary object
+        # Compatibility: v30
+        # Header is 84 bytes in length
+        h = infile[0:84]
+
+        self.version = convert_dword(h[0:4])
+        self.signature = convert_string(4, h[4:8])
+        self.fileName = build_filename(60, h[16:76])
+
+    def fileinfo_v30(self, infile):
+        # Parse through the 'File Information' portion of Prefetch file
+        # Information section is 156 bytes in length
+        i = infile[84:308]
+
+        self.metricsOffset = convert_dword(i[0:4])
+        self.metricsEntries = convert_dword(i[4:8])
+        self.traceChainsOffset = convert_dword(i[8:12])
+        self.traceChainsEntries = convert_dword(i[12:16])
+        self.stringsOffset = convert_dword(i[16:20])
+        self.stringsLength = convert_dword(i[20:24])
+        self.volumesOffset = convert_dword(i[24:28])
+        self.volumesEntries = convert_dword(i[28:32])
+        self.volumesLength = convert_dword(i[32:36])
+        self.lastExecuted = convert_dwordlong(i[44:52])
+        self.additionalExecutionTimestamps = struct.unpack("7Q", i[52:108])
+        self.runCount = convert_dword(i[124:128])
+
+    def strings(self, infile, offset, length):
+        # Returns an array of filename strings, from the "strings" section
+        # of the Prefetch file
+        strings = []
+        s = infile[offset:offset + length]
+        stringsdata = convert_string(length, s)
+        splitstring = stringsdata.split("\x00\x00")
+        
+        for item in splitstring:
+           strings.append(item.replace("\x00", ""))
+
+        return strings
+
+    def volumes(self, infile, offset):
+        # Returns a dictionary object of the 'volumes' section
+        v = infile[offset:offset + 96]
+
+        self.volumesOffset = convert_dword(v[0:4])
+        self.volumesLength = convert_dword(v[4:8])
+        self.volumeCreationTime = convert_timestamp(convert_dwordlong(v[8:16]))
+        self.volumeSerialNumber = format(convert_dword(v[16:20]), "x")
+
+        # Volume path offset is relative to the start of section D
+        # This piece seeks back to the start of section D, and then
+        # seeks to the volume path from that point
+        v = infile[(offset + self.volumesOffset) : (offset + self.volumesOffset + (self.volumesLength * 2))]
+
+        # vol_length is the number of characters in the volpath string
+        # The volume path string is UTF-16, which means each character
+        # consumes two bytes. vol_length * 2 account for this
+        self.volumesPath = convert_string(len(v), v)
+        self.volumesPath =  self.volumesPath.replace("\x00", "")
+
+
+def print_verbose(infile):
+    # This function performs Prefetch file version detection
+    # and prints parsed results to stdout
+
+    with open(infile, "rb") as f:
+        version = convert_dword(f.read(4))
+        f.seek(-4, 1)
+
+        if version == 17:
+            p = prefetch_v17(f)
+        elif version == 23:
+            p = prefetch_v23(f)
+        elif version == 26:
+            p = prefetch_v26(f)
+        else:
+            compressedHeader = convert_string(3, f.read(3))
+            if compressedHeader == "MAM":
+                d = DecompressWin10()
+                decompressed = d.decompress(infile)
+                p = Prefetch_v30(decompressed)
+            else:
+                print "[ - ] {} could not be parsed and may not be a valid PF file".format(infile)
+                return
+    
+    banner = "=" * (len(p.fileName) + 2)
+    print "\n{0}\n{1}\n{0}\n".format(banner, p.fileName)
+    print "Run count: {}".format(p.runCount)
+    print "Last executed: {}".format(convert_timestamp(p.lastExecuted))
+
+    if hasattr(p, "additionalExecutionTimestamps"):
+        print "Additional execution timestamp(s):"
+        for item in p.additionalExecutionTimestamps:
+            if item:
+                print "    {}".format(convert_timestamp(item))
+
+    print "\nVolume path: {}".format(p.volumesPath)
+    print "Volume serial number {}".format(p.volumeSerialNumber)
+    print "\nResources loaded:\n"
+
+    count = 1
+
+    for item in p.strings:
+        if item != p.strings[-1]:
+            if count > 999:
+                print "{}: {}".format(count, item)
+            if count > 99:
+                print "{}:  {}".format(count, item)                            
+            elif count > 9:
+                print "{}:   {}".format(count, item)
+            else:
+                print "{}:    {}".format(count, item)
+        count += 1
+
+def sortByExecutionTime(directory):
+    # This function returns the filename and last execution time of a given Prefetch file
+    # This function is broken out be cause it is used when sorting last executing times
+    # for a directory of prefetch files (-e functionality)
+>>>>>>> 89bc3e6bcd93493fed11e2876db8ac93c307e90a
 
 def sortTimestamps(directory):
     timestamps = []
