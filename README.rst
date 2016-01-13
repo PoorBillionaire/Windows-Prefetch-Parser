@@ -40,35 +40,30 @@ Using the ``--file / -f`` switch provides the output below:
 ::
 
     dev@computer:~$ python prefetch.py -f PING.EXE-7E94E73E.pf
+
+    =========
+    CMD.EXE
+    =========
     
-    ===================
-    Filename: CMD.EXE
-    ===================
+    Run count: 2
+    Last Executed:
+        2015-11-12 17:12:21.997002
+        2015-11-12 17:11:16.192044
 
-    Run count: 17
-    Last executed: 2015-11-14 23:32:03.051396
-    Additional execution timestamp(s):
-        2015-11-14 23:27:20.815510
-        2015-11-14 21:50:33.595482
-        2015-11-14 03:22:22.545884
-        2015-11-12 07:31:13.017108
-        2015-11-12 06:28:31.903824
-        2015-11-12 06:09:16.828206
-        2015-11-12 04:26:48.679006
-
-    Volume path: \VOLUME{01d11b57aa4f5b10-e8aabf9f}
-    Volume serial number e8aabf9f
-
+    Volume Path(s): \DEVICE\HARDDISKVOLUME1
+    Volume Creation Time: 2015-11-12 18:01:19.222974
+    Volume Serial Number: ba22473f
+    
     Resources loaded:
-
-    1:    \VOLUME{01d11b57aa4f5b10-e8aabf9f}\WINDOWS\SYSTEM32\NTDLL.DLL
-    2:    \VOLUME{01d11b57aa4f5b10-e8aabf9f}\WINDOWS\SYSTEM32\CMD.EXE
-    3:    \VOLUME{01d11b57aa4f5b10-e8aabf9f}\WINDOWS\SYSTEM32\KERNEL32.DLL
-    4:    \VOLUME{01d11b57aa4f5b10-e8aabf9f}\WINDOWS\SYSTEM32\KERNELBASE.DLL
-    5:    \VOLUME{01d11b57aa4f5b10-e8aabf9f}\WINDOWS\SYSTEM32\LOCALE.NLS
-    ...
-    ...
-    ...
+    
+    1:    \DEVICE\HARDDISKVOLUME1\WINDOWS\SYSTEM32\NTDLL.DLL
+    2:    \DEVICE\HARDDISKVOLUME1\WINDOWS\SYSTEM32\CMD.EXE
+    3:    \DEVICE\HARDDISKVOLUME1\WINDOWS\SYSTEM32\KERNEL32.DLL
+    4:    \DEVICE\HARDDISKVOLUME1\WINDOWS\SYSTEM32\KERNELBASE.DLL
+    5:    \DEVICE\HARDDISKVOLUME1\WINDOWS\SYSTEM32\LOCALE.NLS
+    6:    \DEVICE\HARDDISKVOLUME1\WINDOWS\SYSTEM32\MSVCRT.DLL
+    7:    \DEVICE\HARDDISKVOLUME1\WINDOWS\SYSTEM32\CMDEXT.DLL
+    8:    \DEVICE\HARDDISKVOLUME1\WINDOWS\SYSTEM32\ADVAPI32.DLL
 
 **--directory**
 
