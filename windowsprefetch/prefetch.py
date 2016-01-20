@@ -31,6 +31,7 @@ import tempfile
 
 class Prefetch(object):
     def __init__(self, infile):
+        self.pFileName = infile
 
         with open(infile, "rb") as f:
             if f.read(3) == "MAM":
@@ -92,7 +93,9 @@ class Prefetch(object):
         executableName = struct.unpack_from("60s", infile.read(60))[0]
         executableName = executableName.split("\x00\x00")[0]
         self.executableName = executableName.replace("\x00", "")
-        self.hash = hex(struct.unpack_from("I", infile.read(4))[0])
+        rawhash = hex(struct.unpack_from("I", infile.read(4))[0])
+        self.hash = rawhash.lstrip("0x")
+
         unknown1 = infile.read(4)
 
     def fileInformation17(self, infile):
@@ -272,8 +275,9 @@ class Prefetch(object):
 
     def prettyPrint(self):
         # Prints important Prefetch data in a structured format
-        banner = "=" * (len(infile[:-3]) + 2)
-        print "\n{0}\n{1}\n{0}\n".format(banner, self.executableName)
+        banner = "=" * (len(self.pFileName) + 2)
+        print "\n{0}\n{1}\n{0}\n".format(banner, self.pFileName)
+        print "Executable Name: {}\n".format(self.executableName)
         print "Run count: {}".format(self.runCount)
 
         if len(self.timestamps) > 1:
