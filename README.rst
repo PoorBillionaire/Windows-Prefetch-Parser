@@ -9,10 +9,10 @@ The Windows Prefetch file was put in place to offer performance benefits when la
 Features
 ---------
 * Specify a single prefetch file or a directory of prefetch files
-* CSV support
-* Limited Windows 10 support
+* CSV
+* (Limited) Windows 10 support
 * Sort a directory of Prefetch files by all execution timestamps
-* (Mostly) cross-platform: Windows 10 prefetch files must be parsed from a Windows 8+ workstation
+* Cross-platform: Windows 10 prefetch files must be parsed from a Windows 8+ workstation
 
 
 Command-Line Options
@@ -41,9 +41,11 @@ Using the ``--file / -f`` switch provides the output below:
 
     dev@computer:~$ python prefetch.py -f PING.EXE-7E94E73E.pf
 
-    =========
-    CMD.EXE
-    =========
+    =====================
+    CMD.EXE-4A81B364.pf
+    =====================
+
+    Executable Name: CMD.EXE
     
     Run count: 2
     Last Executed:
@@ -95,12 +97,10 @@ Using the ``--csv / -c`` flag will provide results in CSV format:
 ::
 
     Last Executed, Executable Name, Run Count
-    2015-11-11 23:26:11.841750, VMTOOLSD.EXE, 3
-    2015-09-02 05:57:42.718750, SETUP50.EXE, 2
-    2015-09-06 17:57:11.439168, EXPLORER.EXE, 2
-    2015-10-05 20:58:47.716908, LOGON.SCR, 3
-    2015-11-15 00:01:50.765626, GOOGLEUPDATE.EXE, 18
-    2015-09-02 07:10:10.064668, WIRESHARK-WIN32-1.12.7.EXE, 1
+    2016-01-20 16:01:27.680128, ADOBEIPCBROKER.EXE-c8d02fab, 1
+    2016-01-20 16:59:42.077480, CREATIVE CLOUD UNINSTALLER.EX-216b8ea8, 1
+    2016-01-19 18:07:18.101626, MSIEXEC.EXE-a2d55cb6, 37237
+    2016-01-20 16:11:15.818394, ACRODIST.EXE-782bc2b2, 1
 
 
 Testing

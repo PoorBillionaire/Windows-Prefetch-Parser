@@ -467,7 +467,7 @@ def main():
                     sys.exit("[ - ] {} could not be parsed".format(args.file))
                 if args.csv:
                     print "Last Executed, Executable Name, Run Count"
-                    print "{}, {}, {}".format(p.timestamps[0], p.executableName, p.runCount)
+                    print "{}, {}-{}, {}".format(p.timestamps[0], p.executableName, p.hash, p.runCount)
                 else:
                     p.prettyPrint()
             else:
