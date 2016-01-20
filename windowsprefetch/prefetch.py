@@ -67,7 +67,7 @@ class Prefetch(object):
             
             elif self.version == 23:
                 self.fileInformation23(f)
-                self.metricsArray17(f)
+                self.metricsArray23(f)
                 self.traceChainsArray17(f)
                 self.volumeInformation23(f)
                 self.getTimeStamps(self.lastRunTime)
@@ -98,13 +98,13 @@ class Prefetch(object):
     def fileInformation17(self, infile):
         # File Information
         # 68 bytes
-        self.metricsOffset = struct.unpack_from("I", infile.read(4))[0] # Relative to start of the file
+        self.metricsOffset = struct.unpack_from("I", infile.read(4))[0]
         self.metricsCount = struct.unpack_from("I", infile.read(4))[0]
-        self.traceChainsOffset = struct.unpack_from("I", infile.read(4))[0] # Relative to start of the file
+        self.traceChainsOffset = struct.unpack_from("I", infile.read(4))[0]
         self.traceChainsCount = struct.unpack_from("I", infile.read(4))[0]
-        self.filenameStringsOffset = struct.unpack_from("I", infile.read(4))[0] # Relative to the start of the file?
+        self.filenameStringsOffset = struct.unpack_from("I", infile.read(4))[0]
         self.filenameStringsSize = struct.unpack_from("I", infile.read(4))[0]
-        self.volumesOffset = struct.unpack_from("I", infile.read(4))[0] # Relative to the start of the file?
+        self.volumesOffset = struct.unpack_from("I", infile.read(4))[0]
         self.volumesCount = struct.unpack_from("I", infile.read(4))[0]
         self.volumesSize = struct.unpack_from("I", infile.read(4))[0]
         self.lastRunTime = infile.read(8)
@@ -137,7 +137,7 @@ class Prefetch(object):
         self.volSerialNumber = hex(struct.unpack_from("I", infile.read(4))[0])
         self.volSerialNumber = self.volSerialNumber.rstrip("L").lstrip("0x")
         self.fileRefOffset = struct.unpack_from("I", infile.read(4))[0]
-        self.fileRefCount = struct.unpack_from("I", infile.read(4))[0]
+        self.fileRefSize = struct.unpack_from("I", infile.read(4))[0]
         self.dirStringsOffset = struct.unpack_from("I", infile.read(4))[0]
         self.dirStringsCount = struct.unpack_from("I", infile.read(4))[0]
         unknown0 = infile.read(4)
@@ -145,13 +145,13 @@ class Prefetch(object):
     def fileInformation23(self, infile):
         # File Information
         # 156 bytes
-        self.metricsOffset = struct.unpack_from("I", infile.read(4))[0] # Relative to start of the file
+        self.metricsOffset = struct.unpack_from("I", infile.read(4))[0]
         self.metricsCount = struct.unpack_from("I", infile.read(4))[0]
-        self.traceChainsOffset = struct.unpack_from("I", infile.read(4))[0] # Relative to start of the file
+        self.traceChainsOffset = struct.unpack_from("I", infile.read(4))[0]
         self.traceChainsCount = struct.unpack_from("I", infile.read(4))[0]
-        self.filenameStringsOffset = struct.unpack_from("I", infile.read(4))[0] # Relative to the start of the file?
+        self.filenameStringsOffset = struct.unpack_from("I", infile.read(4))[0]
         self.filenameStringsSize = struct.unpack_from("I", infile.read(4))[0]
-        self.volumesOffset = struct.unpack_from("I", infile.read(4))[0] # Relative to the start of the file?
+        self.volumesOffset = struct.unpack_from("I", infile.read(4))[0]
         self.volumesCount = struct.unpack_from("I", infile.read(4))[0]
         self.volumesSize = struct.unpack_from("I", infile.read(4))[0]
         unknown0 = infile.read(8)
@@ -170,7 +170,7 @@ class Prefetch(object):
         self.filenameOffset = struct.unpack_from("I", infile.read(4))[0]
         self.filenameLength = struct.unpack_from("I", infile.read(4))[0]
         unknown3 = infile.read(4)
-        self.fileReference = struct.unpack_from("Q", infile.read(8))[0]
+        fileReference = infile.read(8)
 
     def volumeInformation23(self, infile):
         # Volume information
@@ -272,7 +272,7 @@ class Prefetch(object):
 
     def prettyPrint(self):
         # Prints important Prefetch data in a structured format
-        banner = "=" * (len(self.executableName) + 2)
+        banner = "=" * (len(infile[:-3]) + 2)
         print "\n{0}\n{1}\n{0}\n".format(banner, self.executableName)
         print "Run count: {}".format(self.runCount)
 
@@ -484,7 +484,7 @@ def main():
                                 p = Prefetch(args.directory + i)
                             except struct.error:
                                 print "[ - ] {} could not be parsed".format(i)
-                            print "{}, {}, {}".format(p.timestamps[0], p.executableName, p.runCount)
+                            print "{}, {}-{}, {}".format(p.timestamps[0], p.executableName, p.hash, p.runCount)
                         else:
                             print "[ - ] {}: Zero-byte Prefetch File".format(i)
                     else:
@@ -508,9 +508,6 @@ def main():
         print "Execution Time, File Executed"
         for i in  sortTimestamps(args.executed):
             print "{}, {}".format(convertTimestamp(i[0]), i[1])
-
-    elif args.csv:
-        pass
 
 
 if __name__ == '__main__':
