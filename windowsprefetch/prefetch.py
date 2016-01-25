@@ -22,6 +22,7 @@ from argparse import ArgumentParser
 import binascii
 import ctypes
 from datetime import datetime,timedelta
+import ntpath
 import os
 import struct
 import sys
@@ -275,8 +276,8 @@ class Prefetch(object):
 
     def prettyPrint(self):
         # Prints important Prefetch data in a structured format
-        banner = "=" * (len(self.pFileName) + 2)
-        print "\n{0}\n{1}\n{0}\n".format(banner, self.pFileName)
+        banner = "=" * (len(ntpath.basename(self.pFileName)) + 2)
+        print "\n{0}\n{1}\n{0}\n".format(banner, ntpath.basename(self.pFileName))
         print "Executable Name: {}\n".format(self.executableName)
         print "Run count: {}".format(self.runCount)
 
