@@ -423,7 +423,7 @@ def sortTimestamps(directory):
             if os.path.getsize(directory + i) > 0:
                 try:
                     p = Prefetch(directory + i)
-                except struct.error:
+                except:
                     print "[ - ] {} could not be parsed".format(i)
                     continue
             else:
@@ -464,7 +464,7 @@ def main():
             if os.path.getsize(args.file) > 0:
                 try:
                     p = Prefetch(args.file)
-                except struct.error, e:
+                except:
                     sys.exit("[ - ] {} could not be parsed".format(args.file))
                 if args.csv:
                     print "Last Executed, Executable Name, Run Count"
@@ -487,7 +487,7 @@ def main():
                         if os.path.getsize(args.directory + i) > 0:
                             try:
                                 p = Prefetch(args.directory + i)
-                            except struct.error:
+                            except:
                                 print "[ - ] {} could not be parsed".format(i)
                             print "{}, {}-{}, {}".format(p.timestamps[0], p.executableName, p.hash, p.runCount)
                         else:
@@ -501,7 +501,7 @@ def main():
                             try:
                                 p = Prefetch(args.directory + i)
                                 p.prettyPrint()
-                            except struct.error:
+                            except:
                                 print "[ - ] {} could not be parsed".format(i)
                         else:
                             print "[ - ] Zero-byte Prefetch file"
