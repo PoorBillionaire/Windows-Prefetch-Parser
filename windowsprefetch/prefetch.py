@@ -350,8 +350,8 @@ class DecompressWin10(object):
         try:
             RtlDecompressBufferEx = ctypes.windll.ntdll.RtlDecompressBufferEx
         except AttributeError, e:
-            print "[ - ] {}".format(e)
-            print "[ - ] Windows 8+ required for this script to decompress Win10 Prefetch files"
+            sys.exit("[ - ] {}".format(e) + \
+            "\n[ - ] Windows 8+ required for this script to decompress Win10 Prefetch files")
 
         RtlGetCompressionWorkSpaceSize = \
             ctypes.windll.ntdll.RtlGetCompressionWorkSpaceSize
@@ -424,8 +424,6 @@ def sortTimestamps(directory):
                 try:
                     p = Prefetch(directory + i)
                 except Exception, e:
-                    if "windll" in e:
-                        print "[ - ] Windows 8+ is required to parse Prefetch type 30"
                     print "[ - ] {} could not be parsed".format(i)
                     continue
             else:
@@ -467,8 +465,6 @@ def main():
                 try:
                     p = Prefetch(args.file)
                 except Exception, e:
-                    if "windll" in e:
-                        print "[ - ] Windows 8+ is required to parse Prefetch type 30"
                     sys.exit("[ - ] {} could not be parsed".format(args.file))
                 if args.csv:
                     print "Last Executed, Executable Name, Run Count"
@@ -492,8 +488,6 @@ def main():
                             try:
                                 p = Prefetch(args.directory + i)
                             except Exception, e:
-                                if "windll" in e:
-                                    print "[ - ] Windows 8+ is required to parse Prefetch type 30"
                                 print "[ - ] {} could not be parsed".format(i)
                             print "{}, {}-{}, {}".format(p.timestamps[0], p.executableName, p.hash, p.runCount)
                         else:
@@ -508,8 +502,6 @@ def main():
                                 p = Prefetch(args.directory + i)
                                 p.prettyPrint()
                             except Exception, e:
-                                if "windll" in e:
-                                    print "[ - ] Windows 8+ is required to parse Prefetch type 30"
                                 print "[ - ] {} could not be parsed".format(i)
                         else:
                             print "[ - ] Zero-byte Prefetch file"
