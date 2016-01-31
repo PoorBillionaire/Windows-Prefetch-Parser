@@ -140,7 +140,6 @@ class Prefetch(object):
         count = 0
         
         while count < self.volumesCount:
-            infile.seek(self.volumesInformationOffset)
             self.volPathOffset = struct.unpack_from("I", infile.read(4))[0]
             self.volPathLength = struct.unpack_from("I", infile.read(4))[0]
             self.volCreationTime = struct.unpack_from("Q", infile.read(8))[0]
@@ -256,7 +255,6 @@ class Prefetch(object):
         count = 0
         
         while count < self.volumesCount:
-            infile.seek(self.volumesInformationOffset)
             self.volPathOffset = struct.unpack_from("I", infile.read(4))[0] 
             self.volPathLength = struct.unpack_from("I", infile.read(4))[0]
             self.volCreationTime = struct.unpack_from("Q", infile.read(8))[0]
