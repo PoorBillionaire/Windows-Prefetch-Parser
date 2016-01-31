@@ -108,9 +108,9 @@ class Prefetch(object):
         self.traceChainsCount = struct.unpack_from("I", infile.read(4))[0]
         self.filenameStringsOffset = struct.unpack_from("I", infile.read(4))[0]
         self.filenameStringsSize = struct.unpack_from("I", infile.read(4))[0]
-        self.volumesOffset = struct.unpack_from("I", infile.read(4))[0]
+        self.volumesInformationOffset = struct.unpack_from("I", infile.read(4))[0]
         self.volumesCount = struct.unpack_from("I", infile.read(4))[0]
-        self.volumesSize = struct.unpack_from("I", infile.read(4))[0]
+        self.volumesInformationSize = struct.unpack_from("I", infile.read(4))[0]
         self.lastRunTime = infile.read(8)
         unknown0 = infile.read(16)
         self.runCount = struct.unpack_from("I", infile.read(4))[0]
@@ -134,17 +134,32 @@ class Prefetch(object):
     def volumeInformation17(self, infile):
         # Volume information
         # 40 bytes
-        infile.seek(self.volumesOffset)
-        self.volPathOffset = struct.unpack_from("I", infile.read(4))[0]
-        self.volPathLength = struct.unpack_from("I", infile.read(4))[0]
-        self.volCreationTime = struct.unpack_from("Q", infile.read(8))[0]
-        self.volSerialNumber = hex(struct.unpack_from("I", infile.read(4))[0])
-        self.volSerialNumber = self.volSerialNumber.rstrip("L").lstrip("0x")
-        self.fileRefOffset = struct.unpack_from("I", infile.read(4))[0]
-        self.fileRefSize = struct.unpack_from("I", infile.read(4))[0]
-        self.dirStringsOffset = struct.unpack_from("I", infile.read(4))[0]
-        self.dirStringsCount = struct.unpack_from("I", infile.read(4))[0]
-        unknown0 = infile.read(4)
+        
+        infile.seek(self.volumesInformationOffset)
+        self.volumesInformationArray = []
+        count = 0
+        
+        while count < self.volumesCount:
+            infile.seek(self.volumesInformationOffset)
+            self.volPathOffset = struct.unpack_from("I", infile.read(4))[0]
+            self.volPathLength = struct.unpack_from("I", infile.read(4))[0]
+            self.volCreationTime = struct.unpack_from("Q", infile.read(8))[0]
+            self.volSerialNumber = hex(struct.unpack_from("I", infile.read(4))[0])
+            self.volSerialNumber = self.volSerialNumber.rstrip("L").lstrip("0x")
+            self.fileRefOffset = struct.unpack_from("I", infile.read(4))[0]
+            self.fileRefSize = struct.unpack_from("I", infile.read(4))[0]
+            self.dirStringsOffset = struct.unpack_from("I", infile.read(4))[0]
+            self.dirStringsCount = struct.unpack_from("I", infile.read(4))[0]
+            unknown0 = infile.read(4)
+
+            infile.seek(self.volumesInformationOffset + self.volPathOffset)
+            volume = {}
+            volume["Volume Name"] = infile.read(self.volPathLength * 2).replace("\x00", "")
+            volume["Creation Date"] = self.convertTimestamp(self.volCreationTime)
+            volume["Serial Number"] = self.volSerialNumber
+            self.volumesInformationArray.append(volume)
+            count += 1
+            infile.seek(self.volumesInformationOffset + 40)
 
     def fileInformation23(self, infile):
         # File Information
@@ -155,9 +170,9 @@ class Prefetch(object):
         self.traceChainsCount = struct.unpack_from("I", infile.read(4))[0]
         self.filenameStringsOffset = struct.unpack_from("I", infile.read(4))[0]
         self.filenameStringsSize = struct.unpack_from("I", infile.read(4))[0]
-        self.volumesOffset = struct.unpack_from("I", infile.read(4))[0]
+        self.volumesInformationOffset = struct.unpack_from("I", infile.read(4))[0]
         self.volumesCount = struct.unpack_from("I", infile.read(4))[0]
-        self.volumesSize = struct.unpack_from("I", infile.read(4))[0]
+        self.volumesInformationSize = struct.unpack_from("I", infile.read(4))[0]
         unknown0 = infile.read(8)
         self.lastRunTime = infile.read(8)
         unknown1 = infile.read(16)
@@ -177,19 +192,36 @@ class Prefetch(object):
         fileReference = infile.read(8)
 
     def volumeInformation23(self, infile):
-        # Volume information
-        # 104 bytes
-        infile.seek(self.volumesOffset)
-        self.volPathOffset = struct.unpack_from("I", infile.read(4))[0] 
-        self.volPathLength = struct.unpack_from("I", infile.read(4))[0]
-        self.volCreationTime = struct.unpack_from("Q", infile.read(8))[0]
-        self.volSerialNumber = hex(struct.unpack_from("I", infile.read(4))[0])
-        self.volSerialNumber = self.volSerialNumber.rstrip("L").lstrip("0x")
-        self.fileRefOffset = struct.unpack_from("I", infile.read(4))[0]
-        self.fileRefCount = struct.unpack_from("I", infile.read(4))[0]
-        self.dirStringsOffset = struct.unpack_from("I", infile.read(4))[0]
-        self.dirStringsCount = struct.unpack_from("I", infile.read(4))[0]
-        unknown0 = infile.read(68)
+        # This function consumes the Volume Information array
+        # 104 bytes per structure in the array
+        # Returns a dictionary object which holds another dictionary
+        # for each volume information array entry
+
+        infile.seek(self.volumesInformationOffset)
+        self.volumesInformationArray = []
+        count = 0
+        
+        while count < self.volumesCount:
+            self.volPathOffset = struct.unpack_from("I", infile.read(4))[0]
+            self.volPathLength = struct.unpack_from("I", infile.read(4))[0]
+            self.volCreationTime = struct.unpack_from("Q", infile.read(8))[0]
+            volSerialNumber = hex(struct.unpack_from("I", infile.read(4))[0])
+            self.volSerialNumber = volSerialNumber.rstrip("L").lstrip("0x")
+            self.fileRefOffset = struct.unpack_from("I", infile.read(4))[0]
+            self.fileRefCount = struct.unpack_from("I", infile.read(4))[0]
+            self.dirStringsOffset = struct.unpack_from("I", infile.read(4))[0]
+            self.dirStringsCount = struct.unpack_from("I", infile.read(4))[0]
+            unknown0 = infile.read(68)
+            
+            infile.seek(self.volumesInformationOffset + self.volPathOffset)
+            volume = {}
+            volume["Volume Name"] = infile.read(self.volPathLength * 2).replace("\x00", "")
+            volume["Creation Date"] = self.convertTimestamp(self.volCreationTime)
+            volume["Serial Number"] = self.volSerialNumber
+            self.volumesInformationArray.append(volume)
+            count += 1
+            infile.seek(self.volumesInformationOffset + 104)
+
 
     def fileInformation26(self, infile):
         # File Information
@@ -200,9 +232,9 @@ class Prefetch(object):
         self.traceChainsCount = struct.unpack_from("I", infile.read(4))[0]
         self.filenameStringsOffset = struct.unpack_from("I", infile.read(4))[0]
         self.filenameStringsSize = struct.unpack_from("I", infile.read(4))[0]
-        self.volumesOffset = struct.unpack_from("I", infile.read(4))[0]
+        self.volumesInformationOffset = struct.unpack_from("I", infile.read(4))[0]
         self.volumesCount = struct.unpack_from("I", infile.read(4))[0]
-        self.volumesSize = struct.unpack_from("I", infile.read(4))[0]
+        self.volumesInformationSize = struct.unpack_from("I", infile.read(4))[0]
         unknown0 = infile.read(8)
         self.lastRunTime = infile.read(64)
         unknown1 = infile.read(16)
@@ -218,26 +250,36 @@ class Prefetch(object):
     def volumeInformation30(self, infile):
         # Volumes Information
         # 96 bytes
-        infile.seek(self.volumesOffset)
-        self.volPathOffset = struct.unpack_from("I", infile.read(4))[0] 
-        self.volPathLength = struct.unpack_from("I", infile.read(4))[0]
-        self.volCreationTime = struct.unpack_from("Q", infile.read(8))[0]
-        self.volSerialNumber = hex(struct.unpack_from("I", infile.read(4))[0])
-        self.volSerialNumber = self.volSerialNumber.rstrip("L").lstrip("0x")
-        self.fileRefOffset = struct.unpack_from("I", infile.read(4))[0]
-        self.fileRefCount = struct.unpack_from("I", infile.read(4))[0]
-        self.dirStringsOffset = struct.unpack_from("I", infile.read(4))[0]
-        self.dirStringsCount = struct.unpack_from("I", infile.read(4))[0]
-        unknown0 = infile.read(60)
+
+        infile.seek(self.volumesInformationOffset)
+        self.volumesInformationArray = []
+        count = 0
+        
+        while count < self.volumesCount:
+            infile.seek(self.volumesInformationOffset)
+            self.volPathOffset = struct.unpack_from("I", infile.read(4))[0] 
+            self.volPathLength = struct.unpack_from("I", infile.read(4))[0]
+            self.volCreationTime = struct.unpack_from("Q", infile.read(8))[0]
+            self.volSerialNumber = hex(struct.unpack_from("I", infile.read(4))[0])
+            self.volSerialNumber = self.volSerialNumber.rstrip("L").lstrip("0x")
+            self.fileRefOffset = struct.unpack_from("I", infile.read(4))[0]
+            self.fileRefCount = struct.unpack_from("I", infile.read(4))[0]
+            self.dirStringsOffset = struct.unpack_from("I", infile.read(4))[0]
+            self.dirStringsCount = struct.unpack_from("I", infile.read(4))[0]
+            unknown0 = infile.read(60)
+
+            infile.seek(self.volumesInformationOffset + self.volPathOffset)
+            volume = {}
+            volume["Volume Name"] = infile.read(self.volPathLength * 2).replace("\x00", "")
+            volume["Creation Date"] = self.convertTimestamp(self.volCreationTime)
+            volume["Serial Number"] = self.volSerialNumber
+            self.volumesInformationArray.append(volume)
+            count += 1
+            infile.seek(self.volumesInformationOffset + 96)
 
     def getVolumePaths(self, infile):
         # Parses volume path information from the PF file
-        self.volumePaths = []
-        infile.seek(self.volumesOffset + self.volPathOffset)
-        volumePaths = infile.read(self.volPathLength * 2)
-
-        for i in volumePaths.split("\x00\x00"):
-            self.volumePaths.append(i.replace("\x00", ""))
+        pass
 
     def getFilenameStrings(self, infile):
         # Parses filename strings from the PF file
@@ -288,17 +330,14 @@ class Prefetch(object):
         else:
             print "Last Executed: {}".format(self.timestamps[0])
         
-        if len(self.volumePaths) > 1:
-            print "\nVolume Path(s):"
-            for i in self.volumePaths:
-                print "\t" + i
-        else:
-            print "\nVolume Path(s): {}".format(self.volumePaths[0])
-
-        print "Volume Creation Time: {}".format(self.convertTimestamp(self.volCreationTime))
-        print "Volume Serial Number: {}".format(self.volSerialNumber)
+        print "\nVolume Information:"
+        for i in self.volumesInformationArray:
+            print "    Volume Name: " + i["Volume Name"]
+            print "    Creation Date: " + i["Creation Date"]
+            print "    Serial Number: " + i["Serial Number"]
+            print ""
         
-        print "\nResources loaded:\n"
+        print "Resources loaded:\n"
         count = 1
         for i in self.resources:
             if i:
