@@ -53,8 +53,8 @@ class Prefetch(object):
                     self.traceChainsArray30(f)
                     self.volumeInformation30(f)
                     self.getTimeStamps(self.lastRunTime)
-                    self.getVolumePaths(f)
                     self.getFilenameStrings(f)
+                    self.directoryStrings(f)
                     return
 
         with open(infile, "rb") as f:
@@ -66,6 +66,7 @@ class Prefetch(object):
                 self.traceChainsArray17(f)
                 self.volumeInformation17(f)
                 self.getTimeStamps(self.lastRunTime)
+                self.directoryStrings(f)
             
             elif self.version == 23:
                 self.fileInformation23(f)
@@ -73,6 +74,7 @@ class Prefetch(object):
                 self.traceChainsArray17(f)
                 self.volumeInformation23(f)
                 self.getTimeStamps(self.lastRunTime)
+                self.directoryStrings(f)
 
             elif self.version == 26:
                 self.fileInformation26(f)
@@ -80,8 +82,8 @@ class Prefetch(object):
                 self.traceChainsArray17(f)
                 self.volumeInformation23(f)
                 self.getTimeStamps(self.lastRunTime)
+                self.directoryStrings(f)
 
-            self.getVolumePaths(f)
             self.getFilenameStrings(f)
 
     def parseHeader(self, infile):
@@ -275,10 +277,6 @@ class Prefetch(object):
             count += 1
             infile.seek(self.volumesInformationOffset + 96)
 
-    def getVolumePaths(self, infile):
-        # Parses volume path information from the PF file
-        pass
-
     def getFilenameStrings(self, infile):
         # Parses filename strings from the PF file
         self.resources = []
@@ -309,10 +307,19 @@ class Prefetch(object):
             else:
                 break
 
-    def convertTimestamp(self, timestamp):
-        # Timestamp is a Win32 FILETIME value
-        # This function returns that value in a human-readable format
-        return str(datetime(1601,1,1) + timedelta(microseconds=timestamp / 10.))
+    def directoryStrings(self, infile):
+        infile.seek(self.volumesInformationOffset)
+        infile.seek(self.dirStringsOffset, 1)
+
+        count = 0
+        self.dirStrings = []
+
+        while count < self.dirStringsCount:
+            stringLength = struct.unpack_from("<H", infile.read(2))[0] * 2
+            directoryString = infile.read(stringLength).replace("\x00", "")
+            infile.read(2) # Read through the end-of-string null byte
+            self.dirStrings.append(directoryString)
+            count += 1
 
     def prettyPrint(self):
         # Prints important Prefetch data in a structured format
@@ -334,6 +341,11 @@ class Prefetch(object):
             print "    Creation Date: " + i["Creation Date"]
             print "    Serial Number: " + i["Serial Number"]
             print ""
+
+        print "Directory Strings:"
+        for i in self.dirStrings:
+            print "    " + i
+        print ""
         
         print "Resources loaded:\n"
         count = 1
