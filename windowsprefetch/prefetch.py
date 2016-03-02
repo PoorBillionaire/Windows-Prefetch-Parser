@@ -159,8 +159,9 @@ class Prefetch(object):
             volume["Creation Date"] = self.convertTimestamp(self.volCreationTime)
             volume["Serial Number"] = self.volSerialNumber
             self.volumesInformationArray.append(volume)
+            
             count += 1
-            infile.seek(self.volumesInformationOffset + 40)
+            infile.seek(self.volumesInformationOffset + (40 * count))
 
     def fileInformation23(self, infile):
         # File Information
@@ -220,8 +221,9 @@ class Prefetch(object):
             volume["Creation Date"] = self.convertTimestamp(self.volCreationTime)
             volume["Serial Number"] = self.volSerialNumber
             self.volumesInformationArray.append(volume)
+            
             count += 1
-            infile.seek(self.volumesInformationOffset + 104)
+            infile.seek(self.volumesInformationOffset + (104 * count))
 
 
     def fileInformation26(self, infile):
@@ -274,8 +276,11 @@ class Prefetch(object):
             volume["Creation Date"] = self.convertTimestamp(self.volCreationTime)
             volume["Serial Number"] = self.volSerialNumber
             self.volumesInformationArray.append(volume)
+            
             count += 1
-            infile.seek(self.volumesInformationOffset + 96)
+            infile.seek(self.volumesInformationOffset + (96 * count))
+
+
 
     def getFilenameStrings(self, infile):
         # Parses filename strings from the PF file
