@@ -153,6 +153,8 @@ class Prefetch(object):
             self.dirStringsCount = struct.unpack_from("I", infile.read(4))[0]
             unknown0 = infile.read(4)
 
+            self.directoryStringsArray.append(self.directoryStrings(infile))
+
             infile.seek(self.volumesInformationOffset + self.volPathOffset)
             volume = {}
             volume["Volume Name"] = infile.read(self.volPathLength * 2).replace("\x00", "")
@@ -201,8 +203,9 @@ class Prefetch(object):
 
         infile.seek(self.volumesInformationOffset)
         self.volumesInformationArray = []
-        count = 0
+        self.directoryStringsArray = []
         
+        count = 0
         while count < self.volumesCount:
             self.volPathOffset = struct.unpack_from("I", infile.read(4))[0]
             self.volPathLength = struct.unpack_from("I", infile.read(4))[0]
@@ -214,6 +217,8 @@ class Prefetch(object):
             self.dirStringsOffset = struct.unpack_from("I", infile.read(4))[0]
             self.dirStringsCount = struct.unpack_from("I", infile.read(4))[0]
             unknown0 = infile.read(68)
+
+            self.directoryStringsArray.append(self.directoryStrings(infile))
             
             infile.seek(self.volumesInformationOffset + self.volPathOffset)
             volume = {}
@@ -256,8 +261,9 @@ class Prefetch(object):
 
         infile.seek(self.volumesInformationOffset)
         self.volumesInformationArray = []
+        self.directoryStrings = []
+
         count = 0
-        
         while count < self.volumesCount:
             self.volPathOffset = struct.unpack_from("I", infile.read(4))[0] 
             self.volPathLength = struct.unpack_from("I", infile.read(4))[0]
@@ -269,6 +275,8 @@ class Prefetch(object):
             self.dirStringsOffset = struct.unpack_from("I", infile.read(4))[0]
             self.dirStringsCount = struct.unpack_from("I", infile.read(4))[0]
             unknown0 = infile.read(60)
+
+            self.directoryStrings.append(self.directoryStrings(infile))
 
             infile.seek(self.volumesInformationOffset + self.volPathOffset)
             volume = {}
@@ -316,15 +324,17 @@ class Prefetch(object):
         infile.seek(self.volumesInformationOffset)
         infile.seek(self.dirStringsOffset, 1)
 
-        count = 0
-        self.dirStrings = []
+        directoryStrings = []
 
+        count = 0
         while count < self.dirStringsCount:
             stringLength = struct.unpack_from("<H", infile.read(2))[0] * 2
             directoryString = infile.read(stringLength).replace("\x00", "")
             infile.read(2) # Read through the end-of-string null byte
-            self.dirStrings.append(directoryString)
+            directoryStrings.append(directoryString)
             count += 1
+
+        return directoryStrings
 
     def prettyPrint(self):
         # Prints important Prefetch data in a structured format
@@ -348,10 +358,11 @@ class Prefetch(object):
             print ""
 
         print "Directory Strings:"
-        for i in self.dirStrings:
-            print "    " + i
+        for volume in self.directoryStringsArray:
+            for i in volume:
+                print "    " + i
         print ""
-        
+
         print "Resources loaded:\n"
         count = 1
         for i in self.resources:
