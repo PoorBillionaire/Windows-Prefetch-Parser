@@ -139,6 +139,7 @@ class Prefetch(object):
         
         infile.seek(self.volumesInformationOffset)
         self.volumesInformationArray = []
+        self.directoryStringsArray = []
         count = 0
         
         while count < self.volumesCount:
@@ -530,6 +531,7 @@ def main():
                 try:
                     p = Prefetch(args.file)
                 except Exception, e:
+                    print "[ - ] {}".format(e)
                     sys.exit("[ - ] {} could not be parsed".format(args.file))
                 if args.csv:
                     print "Last Executed, Executable Name, Run Count"
