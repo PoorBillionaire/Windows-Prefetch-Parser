@@ -53,8 +53,8 @@ class Prefetch(object):
                     self.traceChainsArray30(f)
                     self.volumeInformation30(f)
                     self.getTimeStamps(self.lastRunTime)
-                    self.getFilenameStrings(f)
                     self.directoryStrings(f)
+                    self.getFilenameStrings(f)
                     return
 
         with open(infile, "rb") as f:
@@ -262,7 +262,7 @@ class Prefetch(object):
 
         infile.seek(self.volumesInformationOffset)
         self.volumesInformationArray = []
-        self.directoryStrings = []
+        self.directoryStringsArray = []
 
         count = 0
         while count < self.volumesCount:
@@ -277,7 +277,7 @@ class Prefetch(object):
             self.dirStringsCount = struct.unpack_from("I", infile.read(4))[0]
             unknown0 = infile.read(60)
 
-            self.directoryStrings.append(self.directoryStrings(infile))
+            self.directoryStringsArray.append(self.directoryStrings(infile))
 
             infile.seek(self.volumesInformationOffset + self.volPathOffset)
             volume = {}
@@ -533,6 +533,7 @@ def main():
                 except Exception, e:
                     print "[ - ] {}".format(e)
                     sys.exit("[ - ] {} could not be parsed".format(args.file))
+                
                 if args.csv:
                     print "Last Executed, Executable Name, Run Count"
                     print "{}, {}-{}, {}".format(p.timestamps[0], p.executableName, p.hash, p.runCount)
