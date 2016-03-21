@@ -520,7 +520,7 @@ def convertTimestamp(timestamp):
 def main():
     p = ArgumentParser()
     p.add_argument("-c", "--csv", help="Present results in CSV format", action="store_true")
-    p.add_argument("-d", "--directory", help="Sort PF files by ALL last execution times")
+    p.add_argument("-d", "--directory", help="Parse all PF files in a given directory")
     p.add_argument("-e", "--executed", help="Sort PF files by ALL execution times")
     p.add_argument("-f", "--file", help="Parse a given Prefetch file")
     args = p.parse_args()
