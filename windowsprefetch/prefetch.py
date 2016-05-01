@@ -135,7 +135,7 @@ class Prefetch(object):
 
     def volumeInformation17(self, infile):
         # Volume information
-        # 40 bytes
+        # 40 bytes per entry in the array
         
         infile.seek(self.volumesInformationOffset)
         self.volumesInformationArray = []
@@ -194,7 +194,8 @@ class Prefetch(object):
         self.filenameOffset = struct.unpack_from("I", infile.read(4))[0]
         self.filenameLength = struct.unpack_from("I", infile.read(4))[0]
         unknown3 = infile.read(4)
-        fileReference = infile.read(8)
+        self.mftRecordNumber = self.convertFileReference(infile.read(6))
+        self.mftSeqNumber = struct.unpack_from("H", infile.read(2))[0]
 
     def volumeInformation23(self, infile):
         # This function consumes the Volume Information array
@@ -337,6 +338,16 @@ class Prefetch(object):
 
         return directoryStrings
 
+    def convertFileReference(self, buf):
+        byteArray = map(lambda x: '%02x' % ord(x), buf)
+            
+        byteString = ""
+        for i in byteArray[::-1]:
+            byteString += i
+        
+        return int(byteString, 16)
+
+
     def prettyPrint(self):
         # Prints important Prefetch data in a structured format
         banner = "=" * (len(ntpath.basename(self.pFileName)) + 2)
@@ -350,6 +361,11 @@ class Prefetch(object):
                 print "    " + i
         else:
             print "Last Executed: {}".format(self.timestamps[0])
+
+        if self.version >= 23:
+            print "\nMFT File Reference:"
+            print "    Sequence Number: {}".format(self.mftSeqNumber)
+            print "    Record Number: {}".format(self.mftRecordNumber)
         
         print "\nVolume Information:"
         for i in self.volumesInformationArray:
@@ -548,7 +564,7 @@ def main():
 
         if os.path.isdir(args.directory):
             if args.csv:
-                print "Last Executed, Executable Name, Run Count"
+                print "Last Executed, MFT Seq Number, MFT Record Number, Executable Name, Run Count"
 
                 for i in os.listdir(args.directory):
                     if i.endswith(".pf"):
@@ -557,11 +573,12 @@ def main():
                                 p = Prefetch(args.directory + i)
                             except Exception, e:
                                 print "[ - ] {} could not be parsed".format(i)
-                            print "{}, {}-{}, {}".format(p.timestamps[0], p.executableName, p.hash, p.runCount)
+                            print "{},{},{},{},{}".format(p.timestamps[0], p.mftSeqNumber, p.mftRecordNumber, p.executableName, p.runCount)
                         else:
                             print "[ - ] {}: Zero-byte Prefetch File".format(i)
                     else:
                         continue
+
             else:
                 for i in os.listdir(args.directory):
                     if i.endswith(".pf"):
