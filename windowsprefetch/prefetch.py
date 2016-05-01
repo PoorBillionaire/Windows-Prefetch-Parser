@@ -186,7 +186,7 @@ class Prefetch(object):
 
     def metricsArray23(self, infile):
         # File Metrics Array
-        # 32 bytes
+        # 32 bytes per array, not parsed in this script
         infile.seek(self.metricsOffset)
         unknown0 = infile.read(4)
         unknown1 = infile.read(4)
@@ -361,11 +361,6 @@ class Prefetch(object):
                 print "    " + i
         else:
             print "Last Executed: {}".format(self.timestamps[0])
-
-        if self.version >= 23:
-            print "\nMFT File Reference:"
-            print "    Sequence Number: {}".format(self.mftSeqNumber)
-            print "    Record Number: {}".format(self.mftRecordNumber)
         
         print "\nVolume Information:"
         for i in self.volumesInformationArray:
