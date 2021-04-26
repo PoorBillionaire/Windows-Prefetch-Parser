@@ -11,34 +11,29 @@ Features
 * Specify a single prefetch file or a directory of prefetch files
 * CSV output support
 * (Limited) Windows 10 support - Windows 10 prefetch files must be parsed from a Windows 8+ workstation
-* Sort a directory of Prefetch files by all execution timestamps
 
 
 Command-Line Options
 ---------------------
-For now, prefetch.py requires one of two command-line options: ``--file`` specifies a single prefetch to point the script at. ``--directory`` specifies an entire directory of prefetch files which will be parsed and printed to stdout. When using ``--directory / -d``, remember to include the trailing slash:
+For now, prefetch.py requires one command-line option: ``--file``, which will run against a single Prefetch file, or if ``--file`` is a directory, all Prefetch files at that location will be parsed. When pointing the script to a directory, please use the full directory path.
 
 ::
 
     dev@computer:~$ ./prefetch.py -h
-    usage: prefetch.py [-h] [-c] [-d DIRECTORY] [-e EXECUTED] [-f FILE]
+    usage: prefetch.py [-h] [-c] [-f FILE]
     
     optional arguments:
       -h, --help            show this help message and exit
       -c, --csv             Present results in CSV format
-      -d DIRECTORY, --directory DIRECTORY
-                        Parse all PF files in a given directory
-      -e EXECUTED, --executed EXECUTED
-                        Sort PF files by ALL execution times
-      -f FILE, --file FILE  Parse a given Prefetch file
+      -f FILE, --file FILE  Parse a given Prefetch file or a directory of Prefetch files
 
-**--file**
+**Single Prefetch File**
 
 Using the ``--file / -f`` switch with a single prefetch file results in the output below:
 
 ::
 
-    dev@computer:~$ python prefetch.py -f CMD.EXE-4A81B364.pf
+    poorbillionaire@computer:~$ prefetch -f CMD.EXE-4A81B364.pf
 
     =====================
     CMD.EXE-4A81B364.pf
@@ -81,28 +76,9 @@ Using the ``--file / -f`` switch with a single prefetch file results in the outp
     15:   \DEVICE\HARDDISKVOLUME2\WINDOWS\BRANDING\BASEBRD\BASEBRD.DLL
     16:   \DEVICE\HARDDISKVOLUME2\WINDOWS\GLOBALIZATION\SORTING\SORTDEFAULT.NLS
 
-**--directory**
+**Directory of Prefetch files**
 
-By invoking the ``--directory / -d`` flag, the Analyst is able to parse an entire directory of Prefetch files at once.
-
-**--executed**
-
-Sort a directory of Prefetch files by execution time. This sort will include ALL timestamps in Windows 8+ Prefetch files (up to eight per file):
-
-::
-
-    dev@computer:~$ python prefetch.py -e Prefetch/
-
-    Execution Time, File Executed
-    2015-11-15 00:02:39.781250, WUAUCLT.EXE-399A8E72
-    2015-11-15 00:02:26.281250, VERCLSID.EXE-3667BD89
-    2015-11-15 00:02:24.343750, WMIPRVSE.EXE-28F301A9
-    2015-11-15 00:02:07.453124, RUNDLL32.EXE-451FC2C0
-    2015-11-15 00:01:50.765626, GOOGLEUPDATE.EXE-1E123D86
-    2015-11-15 00:01:08, NTOSBOOT-B00DFAAD
-    ...
-    ...
-    ...
+By invoking the ``--file / -f`` flag against a directory, the script will parse all Prefetch files at that location.
 
 **--csv**
 
@@ -110,22 +86,21 @@ Using the ``--csv / -c`` flag will provide results in CSV format:
 
 ::
 
-    Last Executed, Executable Name, Run Count
-    2016-01-20 16:01:27.680128, ADOBEIPCBROKER.EXE-c8d02fab, 1
-    2016-01-20 16:59:42.077480, CREATIVE CLOUD UNINSTALLER.EX-216b8ea8, 1
-    2016-01-19 18:07:18.101626, MSIEXEC.EXE-a2d55cb6, 37237
-    2016-01-20 16:11:15.818394, ACRODIST.EXE-782bc2b2, 1
+    Timestamp,Executable Name,MFT Seq Number,MFT Entry Number,Prefetch Hash,Run Count
+    2016-01-11 22:08:20.985332,CALC.EXE,3fbef7fd,1,357876,2
+    2016-01-10 02:12:33.809542,CALC.EXE,3fbef7fd,1,357876,2
+    2016-01-13 17:00:24.936044,CALCULATOR.EXE,6940bd5c,0,0,1
+    2016-01-13 18:06:55.334458,CHROME.EXE,b3ba7868,1,357876,20
+    2016-01-13 17:48:16.338842,CHROME.EXE,b3ba7868,1,357876,20
+    2016-01-12 20:07:03.981068,CMD.EXE,d269b812,1,40692,55
+    2016-01-10 02:29:02.788726,CMD.EXE,d269b812,1,40692,55
+    2016-01-13 22:47:25.748076,DCODEDCODEDCODEDCODEDCODEDCOD,e65b9fe8,1,357876,2
+    2016-01-13 22:47:21.215876,DCODEDCODEDCODEDCODEDCODEDCOD,e65b9fe8,1,357876,2
+    2016-01-13 16:50:34.657842,DEVENV.EXE,854d7862,1,148922,54
+    2016-01-12 19:22:50.094814,DEVENV.EXE,854d7862,1,148922,54
+    ...
 
 
-Testing
---------
-
-Testing on the prefetch file types below has been completed successfully:
-
-* Windows XP (version 17)
-* Windows 7 (version 23)
-* Windows 8.1 (version 26)
-* Windows 10 (version 30)
 
 References
 -----------
@@ -142,16 +117,3 @@ To gain a better understanding of the prefetch file format, check out the follow
 `Libyal Project: libscca <https://github.com/libyal/libscca/blob/master/documentation/Windows%20Prefetch%20File%20(PF)%20format.asciidoc>`_
 
 `Zena Forensics: A first look at Windows 10 Prefetch files <http://blog.digital-forensics.it/2015/06/a-first-look-at-windows-10-prefetch.html>`_
-
-Python Requirements
---------------------
-* from argparse import ArgumentParser
-* import binascii
-* import collections
-* import ctypes
-* from datetime import datetime,timedelta
-* import json
-* import os
-* import struct
-* import sys
-* import tempfile
