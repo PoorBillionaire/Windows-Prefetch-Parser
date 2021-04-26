@@ -15,12 +15,12 @@ Features
 
 Command-Line Options
 ---------------------
-For now, prefetch.py requires one of two command-line options: ``--file`` specifies a single prefetch to point the script at. ``--directory`` specifies an entire directory of prefetch files which will be parsed and printed to stdout. When using ``--directory / -d``, remember to include the trailing slash:
+For now, prefetch.py requires only one command-line option: ``--file`` can specify a single Prefetch file, or a directory of Prefetch files to parse: 
 
 ::
 
     dev@computer:~$ ./prefetch.py -h
-    usage: prefetch.py [-h] [-c] [-d DIRECTORY] [-e EXECUTED] [-f FILE]
+    usage: prefetch.py [-h] [-c] [-f FILE]
     
     optional arguments:
       -h, --help            show this help message and exit
