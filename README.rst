@@ -15,25 +15,26 @@ Features
 
 Command-Line Options
 ---------------------
-For now, prefetch.py requires one command-line option: ``--file``, which will run against a single Prefetch file, or if ``--file`` is a directory, all Prefetch files at that location will be parsed. When pointing the script to a directory, please use the full directory path.
+For now, prefetch.py requires one of two command-line options: ``--file`` specifies a single prefetch to point the script at. ``--directory`` specifies an entire directory of prefetch files which will be parsed and printed to stdout. When using ``--directory / -d``, remember to include the trailing slash:
 
 ::
 
     dev@computer:~$ ./prefetch.py -h
-    usage: prefetch.py [-h] [-c] [-f FILE]
+    usage: prefetch.py [-h] [-c] [-d DIRECTORY] [-e EXECUTED] [-f FILE]
     
     optional arguments:
       -h, --help            show this help message and exit
       -c, --csv             Present results in CSV format
-      -f FILE, --file FILE  Parse a given Prefetch file or a directory of Prefetch files
+      -f FILE, --file FILE  Parse a given Prefetch file
 
-**Single Prefetch File**
+Single Prefetch File
+---------------------
 
 Using the ``--file / -f`` switch with a single prefetch file results in the output below:
 
 ::
 
-    poorbillionaire@computer:~$ prefetch -f CMD.EXE-4A81B364.pf
+    dev@computer:~$ python prefetch.py -f CMD.EXE-4A81B364.pf
 
     =====================
     CMD.EXE-4A81B364.pf
@@ -76,34 +77,28 @@ Using the ``--file / -f`` switch with a single prefetch file results in the outp
     15:   \DEVICE\HARDDISKVOLUME2\WINDOWS\BRANDING\BASEBRD\BASEBRD.DLL
     16:   \DEVICE\HARDDISKVOLUME2\WINDOWS\GLOBALIZATION\SORTING\SORTDEFAULT.NLS
 
-**Directory of Prefetch files**
+Muliple Prefetch Files
+-----------------------
 
-By invoking the ``--file / -f`` flag against a directory, the script will parse all Prefetch files at that location.
+Use the same syntax as above, but point the script to a directory of Prefetch files.
 
-**--csv**
+CSV Format
+-----------
 
 Using the ``--csv / -c`` flag will provide results in CSV format:
 
 ::
 
-    Timestamp,Executable Name,MFT Seq Number,MFT Entry Number,Prefetch Hash,Run Count
-    2016-01-11 22:08:20.985332,CALC.EXE,3fbef7fd,1,357876,2
-    2016-01-10 02:12:33.809542,CALC.EXE,3fbef7fd,1,357876,2
-    2016-01-13 17:00:24.936044,CALCULATOR.EXE,6940bd5c,0,0,1
-    2016-01-13 18:06:55.334458,CHROME.EXE,b3ba7868,1,357876,20
-    2016-01-13 17:48:16.338842,CHROME.EXE,b3ba7868,1,357876,20
-    2016-01-12 20:07:03.981068,CMD.EXE,d269b812,1,40692,55
-    2016-01-10 02:29:02.788726,CMD.EXE,d269b812,1,40692,55
-    2016-01-13 22:47:25.748076,DCODEDCODEDCODEDCODEDCODEDCOD,e65b9fe8,1,357876,2
-    2016-01-13 22:47:21.215876,DCODEDCODEDCODEDCODEDCODEDCOD,e65b9fe8,1,357876,2
-    2016-01-13 16:50:34.657842,DEVENV.EXE,854d7862,1,148922,54
-    2016-01-12 19:22:50.094814,DEVENV.EXE,854d7862,1,148922,54
-    ...
-
+    Last Executed, Executable Name, Run Count
+    2016-01-20 16:01:27.680128, ADOBEIPCBROKER.EXE-c8d02fab, 1
+    2016-01-20 16:59:42.077480, CREATIVE CLOUD UNINSTALLER.EX-216b8ea8, 1
+    2016-01-19 18:07:18.101626, MSIEXEC.EXE-a2d55cb6, 37237
+    2016-01-20 16:11:15.818394, ACRODIST.EXE-782bc2b2, 1
 
 
 References
 -----------
+
 This project would not have been possible without the work of others much smarter than I. The prefetch file format is not officially documented by Microsoft and has been understood through reverse engineering, and trial-and-error. 
 
 Additionally, Without the excellent work by Francesco Picasso in understanding the Windows 10 prefetch compression method, I would not have been able to get Windows 10 parsed here. I use a modified version of his decompression script in prefetch.py. Francesco's original script can be found at the link below:
@@ -117,3 +112,4 @@ To gain a better understanding of the prefetch file format, check out the follow
 `Libyal Project: libscca <https://github.com/libyal/libscca/blob/master/documentation/Windows%20Prefetch%20File%20(PF)%20format.asciidoc>`_
 
 `Zena Forensics: A first look at Windows 10 Prefetch files <http://blog.digital-forensics.it/2015/06/a-first-look-at-windows-10-prefetch.html>`_
+
