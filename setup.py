@@ -9,7 +9,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='windowsprefetch',
-    version='4.0.2',
+    version='4.0.3',
     description='A Python script to parse Windows Prefetch files',
     long_description=long_description,
     url='https://github.com/PoorBillionaire/Windows-Prefetch-Parser',
@@ -26,7 +26,7 @@ setup(
     keywords='DFIR Prefetch Forensics Incident Response Microsoft Windows',
     packages=find_packages(),
     entry_points={
-        "console_scripts":["prefetch=windowsprefetch.scripts.prefetch:main"]
+        "console_scripts":["prefetch.py=windowsprefetch.scripts.prefetch:main"]
 
     }
 )
