@@ -32,7 +32,7 @@ def main():
                 parsed_files.append(p)
 
     if args.csv:
-        print("Timestamp,Executable Name,MFT Seq Number,MFT Entry Number,Prefetch Hash,Run Count")
+        print("Timestamp,Executable Name,Prefetch Hash,MFT Seq Number,MFT Entry Number,Run Count")
 
     for p in parsed_files:
         if args.csv:
